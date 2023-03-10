@@ -1,12 +1,10 @@
 package com.example.chatgptproject.dto;
 
-
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 @Builder
 @Data
-public class TelegramRequestDTO {
+public class ChatMessageDTO {
     private final long updateId;
     private final long chatId;
     private final String message;

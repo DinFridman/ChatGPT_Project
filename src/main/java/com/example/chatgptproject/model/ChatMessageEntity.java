@@ -7,22 +7,35 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity(name = "ChatMessageEntity")
 @Table(
-        name = "chat_messages",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "chat_update_id_unique",
-                        columnNames = {"update_id"})//TODO: Add chatId,userId
-        })
+        name = "chat_messages")
 public class ChatMessageEntity {
+
     @Id
+    @SequenceGenerator(
+            name = "message_sequence",
+            sequenceName = "message_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "message_sequence"
+    )
+    @Column(
+            name = "message_id",
+            updatable = false,
+            nullable = false
+    )
+    private long messageId;
+
     @Column(
             name = "update_id",
-            updatable = false
+            updatable = false,
+            nullable = false
     )
     private long updateId;
 

@@ -1,34 +1,52 @@
 package com.example.chatgptproject.service;
 import com.example.chatgptproject.dto.ChatAnswerDTO;
-import com.example.chatgptproject.dto.OpenAIMessageDTO;
+import com.example.chatgptproject.dto.ChatMessageDTO;
+import com.example.chatgptproject.dto.ConversationDTO;
+import com.example.chatgptproject.dto.OpenAIPromptDTO;
 import com.example.chatgptproject.dto.mapper.ChatAnswerDTOMapper;
-import com.example.chatgptproject.dto.mapper.TelegramRequestDTOMapper;
+import com.example.chatgptproject.utils.enums.Roles;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.api.objects.Update;
 
 @Service
 public class RequestService {
     private static final Logger logger = LogManager.getLogger("RequestService-logger");
-    private TelegramRequestDTOMapper telegramRequestDTOMapper;
-    private GenerateAnswerService generateAnswerService;
-    private ChatAnswerDTOMapper chatAnswerDTOMapper;
+    private final GenerateAnswerService generateAnswerService;
+    private final MessagesService messagesService;
+    private final ChatAnswerDTOMapper chatAnswerDTOMapper;
 
-    public ChatAnswerDTO generateAnswer(Update update) throws JsonProcessingException, JSONException {
-        OpenAIMessageDTO openAIMessageDTO = generateAnswerService
-                .generateAnswer(telegramRequestDTOMapper
-                        .mapToDTO(update));
+    public RequestService(GenerateAnswerService generateAnswerService,
+                          MessagesService messagesService,
+                          ChatAnswerDTOMapper chatAnswerDTOMapper) {
+        this.generateAnswerService = generateAnswerService;
+        this.messagesService = messagesService;
+        this.chatAnswerDTOMapper = chatAnswerDTOMapper;
+    }
 
-        ChatAnswerDTO chatAnswerDTO = chatAnswerDTOMapper.mapToChatAnswerDTO(
-                update.getMessage().getChatId().toString(),
-                openAIMessageDTO.getContent());
+    public ChatAnswerDTO generateAnswer(ChatMessageDTO chatMessageDTO) throws JsonProcessingException, JSONException {
+        ConversationDTO conversationDTO = messagesService.addChatMessageAndGetConversation(
+                chatMessageDTO);
 
-        logger.info("----------AI_Answer : " + chatAnswerDTO.getMessage()  + "----------");
-        return chatAnswerDTO;
+        OpenAIPromptDTO openAIPromptDTO = generateAnswerService
+                .generateAnswer(conversationDTO);
 
+        logger.info("----------AI_Answer : " + openAIPromptDTO  + "----------");
+
+        messagesService.addChatMessage(
+                ChatMessageDTO.builder()
+                        .chatId(chatMessageDTO.getChatId())
+                        .message(openAIPromptDTO.getContent())
+                        .role(Roles.ASSISTANCE.toString())
+                        .updateId(chatMessageDTO.getUpdateId())
+                        .userId(chatMessageDTO.getUserId())
+                        .build());
+
+        return chatAnswerDTOMapper.mapToChatAnswerDTO(
+                chatMessageDTO.getChatId(),
+                openAIPromptDTO.getContent());
     }
 
 }

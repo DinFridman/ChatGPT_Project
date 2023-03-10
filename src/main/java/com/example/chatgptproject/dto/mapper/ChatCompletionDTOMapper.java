@@ -2,25 +2,21 @@ package com.example.chatgptproject.dto.mapper;
 
 
 import com.example.chatgptproject.dto.ChatCompletionDTO;
-import com.example.chatgptproject.dto.OpenAIMessageDTO;
-import com.example.chatgptproject.dto.TelegramRequestDTO;
+import com.example.chatgptproject.dto.ConversationDTO;
+import com.example.chatgptproject.dto.OpenAIPromptDTO;
 import com.example.chatgptproject.utils.enums.OpenAiModels;
-import com.example.chatgptproject.utils.enums.Roles;
 
 import java.util.ArrayList;
 
 public class ChatCompletionDTOMapper {
-    public ChatCompletionDTO mapToDTO(TelegramRequestDTO telegramRequestDTO, OpenAiModels model) {
-        ArrayList<OpenAIMessageDTO> messageModels = new ArrayList<>();
-        messageModels.add( OpenAIMessageDTO.builder()
-                .content(telegramRequestDTO.getMessage())
-                .role(Roles.USER.toString()).build() ); //TODO: User is always defined
+    public ChatCompletionDTO mapToDTO( OpenAiModels model,ConversationDTO conversationDTO) {
+        ArrayList<OpenAIPromptDTO> openAIPromptDTOS = conversationDTO.getConversation();
 
         return ChatCompletionDTO.builder()
                 .model(model.toString())
                         .maxTokens(2000)
                                 .temperature(0.8)
-                                        .conversation(messageModels)
+                                        .conversation(openAIPromptDTOS)
                 .build();
     }
 }

@@ -3,7 +3,7 @@ package com.example.chatgptproject.utils.enums;
 public enum Roles {
     SYSTEM("system"),
     USER("user"),
-    ASSISTANCE("assistance");
+    ASSISTANCE("assistant");
     private String role;
 
     Roles(String role) {

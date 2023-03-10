@@ -32,7 +32,7 @@ public class UserEntity {
             name = "id",
             updatable = false
     )
-    private Long userId;
+    private long userId;
 
     @Column(
             name = "first_name",
@@ -85,7 +85,7 @@ public class UserEntity {
                       String lastName,
                       String email,
                       String phoneNumber,
-                      Long chatId,
+                      long chatId,
                       String userName,
                       String password) {
 
