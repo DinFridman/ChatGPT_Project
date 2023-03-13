@@ -52,7 +52,7 @@ public class MessagesService {
                 .findMessagesByChatId(chatId)
                 .stream()
                 .map(entity -> openAIPromptDTOMapper
-                        .mapToOpenAIPromptDTO(entity.getRole()
+                        .mapToOpenAIPromptDTO(entity.getAppRole()
                                 , entity.getMessage())).collect(Collectors.toList());
 
     }

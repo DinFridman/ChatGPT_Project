@@ -2,7 +2,6 @@ package com.example.chatgptproject.model;
 
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -60,22 +59,29 @@ public class ChatMessageEntity {
     private Long userId;
 
     @Column(
-            name = "role",
+            name = "app_role",
             nullable = false,
             columnDefinition = "TEXT"
     )
-    private String role;
+    private String appRole;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",
+            referencedColumnName = "user_id",
+            insertable = false,
+            updatable = false)
+    private UserEntity user;
 
     public ChatMessageEntity(long updateId,
                              long chatId,
                              String message,
                              long userId,
-                             String role) {
+                             String appRole) {
         this.updateId = updateId;
         this.chatId = chatId;
         this.message = message;
         this.userId = userId;
-        this.role = role;
+        this.appRole = appRole;
     }
 
 
@@ -86,7 +92,7 @@ public class ChatMessageEntity {
                 ", chatId=" + chatId +
                 ", message='" + message + '\'' +
                 ", userId=" + userId +
-                ", role='" + role + '\'' +
+                ", appRole='" + appRole + '\'' +
                 '}';
     }
 }

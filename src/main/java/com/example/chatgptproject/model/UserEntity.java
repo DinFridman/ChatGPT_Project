@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 
 @Getter
 @Setter
@@ -30,7 +33,7 @@ public class UserEntity {
             generator = "user_sequence"
     )
     @Column(
-            name = "id",
+            name = "user_id",
             updatable = false
     )
     private Long userId;
@@ -88,6 +91,9 @@ public class UserEntity {
             columnDefinition = "TEXT"
     )
     private String role;
+
+    @OneToMany(mappedBy = "user")
+    private Collection<ChatMessageEntity> conversation = new ArrayList<>();
 
     public UserEntity(String firstName,
                       String lastName,
