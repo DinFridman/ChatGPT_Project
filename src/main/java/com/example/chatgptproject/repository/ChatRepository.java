@@ -13,4 +13,6 @@ public interface ChatRepository extends JpaRepository<ChatMessageEntity, Long> {
             " FROM ChatMessageEntity m " +
             "WHERE m.chatId = :chatId")
     ArrayList<ChatMessageEntity> findMessagesByChatId(@Param("chatId") Long chatId);
+
+    boolean existsChatMessageEntityByChatId(Long chatId);
 }

@@ -1,6 +1,7 @@
 package com.example.chatgptproject.model;
 
 
+import com.example.chatgptproject.utils.enums.Roles;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +33,7 @@ public class UserEntity {
             name = "id",
             updatable = false
     )
-    private long userId;
+    private Long userId;
 
     @Column(
             name = "first_name",
@@ -81,11 +82,18 @@ public class UserEntity {
     )
     private String password;
 
+    @Column(
+            name = "role",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
+    private String role;
+
     public UserEntity(String firstName,
                       String lastName,
                       String email,
                       String phoneNumber,
-                      long chatId,
+                      Long chatId,
                       String userName,
                       String password) {
 

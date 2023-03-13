@@ -17,7 +17,7 @@ import org.telegram.telegrambots.api.objects.Update;
 @RestController
 public class Controller {
     private final RequestService requestService;
-    private static final Logger logger = LogManager.getLogger("Controller-logger");
+    private static final Logger logger = LogManager.getLogger("controller-logger");
     private final ChatMessageDTOMapper chatMessageDTOMapper;
 
     public Controller(RequestService requestService,
@@ -33,7 +33,6 @@ public class Controller {
         ChatAnswerDTO response = requestService
                 .generateAnswer(chatMessageDTOMapper.mapToDTO(request));
         return new ResponseEntity<>(response, HttpStatus.OK);
-
     }
 
 }

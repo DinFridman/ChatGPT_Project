@@ -12,7 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity(name = "ChatMessageEntity")
 @Table(
-        name = "chat_messages")
+        name = "chat_messages"
+    )
 public class ChatMessageEntity {
 
     @Id
@@ -30,20 +31,20 @@ public class ChatMessageEntity {
             updatable = false,
             nullable = false
     )
-    private long messageId;
+    private Long messageId;
 
     @Column(
             name = "update_id",
             updatable = false,
             nullable = false
     )
-    private long updateId;
+    private Long updateId;
 
     @Column(
             name = "chat_id",
             nullable = false
     )
-    private long chatId;
+    private Long chatId;
 
     @Column(
             name = "message",
@@ -56,7 +57,7 @@ public class ChatMessageEntity {
             name = "user_id",
             nullable = false
     )
-    private long userId;
+    private Long userId;
 
     @Column(
             name = "role",

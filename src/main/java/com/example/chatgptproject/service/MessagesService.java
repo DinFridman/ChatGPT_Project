@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class MessagesService {
-    private static final Logger logger = LogManager.getLogger("MessageService-logger");
+    private static final Logger logger = LogManager.getLogger("messageService-logger");
     private final ChatRepository chatRepository;
     private final ChatMessageMapper chatMessageMapper;
     private final OpenAIPromptDTOMapper openAIPromptDTOMapper;

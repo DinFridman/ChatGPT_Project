@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RequestService {
-    private static final Logger logger = LogManager.getLogger("RequestService-logger");
+    private static final Logger logger = LogManager.getLogger("requestService-logger");
     private final GenerateAnswerService generateAnswerService;
     private final MessagesService messagesService;
     private final ChatAnswerDTOMapper chatAnswerDTOMapper;

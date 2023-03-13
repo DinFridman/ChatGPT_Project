@@ -26,7 +26,7 @@ public class GenerateAnswerService {
     private final OpenAIPromptDTOMapper openAIPromptDTOMapper;
     private final ChatCompletionDTOMapper chatCompletionDTOMapper;
     private HttpEntity<String> requestEntity;
-    private static final Logger logger = LogManager.getLogger("GenerateAnswerService-logger");
+    private static final Logger logger = LogManager.getLogger("generateAnswerService-logger");
 
     public GenerateAnswerService(OpenAIPromptDTOMapper openAIPromptDTOMapper,
                                  ChatCompletionDTOMapper chatCompletionDTOMapper) {
