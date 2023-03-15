@@ -13,15 +13,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
 
-    @GetMapping("/users")
-    public ResponseEntity<String> getUsers() {
-        return ResponseEntity.ok().body("no users yet");
-    }
-
-    @PostMapping("/users/save")
-    public ResponseEntity<?> saveUser(@RequestBody ApplicationUser user) {
-        return ResponseEntity.ok().body(userService.saveUser(user));
-    }
 }
