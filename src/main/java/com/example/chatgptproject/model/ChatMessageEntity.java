@@ -63,7 +63,7 @@ public class ChatMessageEntity {
             nullable = false,
             columnDefinition = "TEXT"
     )
-    private String appRole;
+    private String role;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",
@@ -76,12 +76,12 @@ public class ChatMessageEntity {
                              long chatId,
                              String message,
                              long userId,
-                             String appRole) {
+                             String role) {
         this.updateId = updateId;
         this.chatId = chatId;
         this.message = message;
         this.userId = userId;
-        this.appRole = appRole;
+        this.role = role;
     }
 
 
@@ -92,7 +92,7 @@ public class ChatMessageEntity {
                 ", chatId=" + chatId +
                 ", message='" + message + '\'' +
                 ", userId=" + userId +
-                ", appRole='" + appRole + '\'' +
+                ", role='" + role + '\'' +
                 '}';
     }
 }

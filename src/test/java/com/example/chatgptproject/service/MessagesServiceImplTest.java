@@ -5,7 +5,7 @@ import com.example.chatgptproject.dto.mapper.OpenAIPromptDTOMapper;
 import com.example.chatgptproject.model.ChatMessageEntity;
 import com.example.chatgptproject.model.mapper.ChatMessageMapper;
 import com.example.chatgptproject.repository.ChatRepository;
-import com.example.chatgptproject.utils.enums.Roles;
+import com.example.chatgptproject.utils.enums.ChatRoles;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -15,8 +15,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class MessagesServiceTest {
-    @InjectMocks private MessagesService underTest;
+class MessagesServiceImplTest {
+    @InjectMocks private MessagesServiceImpl underTest;
     @Mock private ChatRepository mockChatRepository;
     @Mock private ChatMessageMapper mockChatMessageMapper;
     @Mock private OpenAIPromptDTOMapper mockOpenAIPromptDTOMapper;
@@ -31,7 +31,7 @@ class MessagesServiceTest {
                 .chatId(10000)
                 .message("Hello")
                 .userId(2)
-                .role(Roles.USER.toString())
+                .role(ChatRoles.USER.toString())
                 .build();
         ChatMessageEntity chatMessageEntity =
                 mockChatMessageMapper.mapToEntity(chatMessage);
@@ -55,7 +55,7 @@ class MessagesServiceTest {
                         .chatId(chatId)
                         .message("Hello")
                         .userId(10000)
-                        .role(Roles.USER.toString())
+                        .role(ChatRoles.USER.toString())
                         .build();
         ChatMessageEntity chatMessageEntity =
                 mockChatMessageMapper.mapToEntity(chatMessageDTO);

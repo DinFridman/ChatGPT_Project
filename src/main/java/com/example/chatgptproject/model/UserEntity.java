@@ -1,12 +1,10 @@
 package com.example.chatgptproject.model;
 
 
-import com.example.chatgptproject.utils.enums.Roles;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -18,8 +16,8 @@ import java.util.Collection;
 @Table(
         name = "users",
         uniqueConstraints = {
-                @UniqueConstraint(name = "user_email_phone_unique",
-                        columnNames = {"email","phone_number"})//TODO: Add userName,password
+                @UniqueConstraint(name = "user_name_unique",
+                        columnNames = {"user_name"})
         })
 public class UserEntity {
     @Id
@@ -85,32 +83,17 @@ public class UserEntity {
     )
     private String password;
 
-    @Column(
-            name = "role",
-            nullable = false,
-            columnDefinition = "TEXT"
-    )
-    private String role;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable( name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Collection<AppRoleEntity> appRoleEntityList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER,
+            mappedBy = "user")
     private Collection<ChatMessageEntity> conversation = new ArrayList<>();
 
-    public UserEntity(String firstName,
-                      String lastName,
-                      String email,
-                      String phoneNumber,
-                      Long chatId,
-                      String userName,
-                      String password) {
 
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.chatId = chatId;
-        this.userName = userName;
-        this.password = password;
-    }
 
     @Override
     public String toString() {
@@ -123,6 +106,8 @@ public class UserEntity {
                 ", chatId=" + chatId +
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
+                ", appRole=" + appRoleEntityList +
+                ", conversation=" + conversation +
                 '}';
     }
 }

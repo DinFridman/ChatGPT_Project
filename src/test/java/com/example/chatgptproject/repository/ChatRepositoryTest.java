@@ -1,7 +1,7 @@
 package com.example.chatgptproject.repository;
 
 import com.example.chatgptproject.model.ChatMessageEntity;
-import com.example.chatgptproject.utils.enums.Roles;
+import com.example.chatgptproject.utils.enums.ChatRoles;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class ChatRepositoryTest {
     @BeforeEach
     void initUseCase() {
         List<ChatMessageEntity> messages = Arrays.asList(
-                new ChatMessageEntity(1,1,"default", 1, Roles.USER.toString())
+                new ChatMessageEntity(1,1,"default", 1, ChatRoles.USER.toString())
         );
         underTest.saveAll(messages);
     }
@@ -43,7 +43,7 @@ class ChatRepositoryTest {
                 chatId,
                 "Hi",
                 1001,
-                Roles.USER.toString()
+                ChatRoles.USER.toString()
         );
         underTest.save(message);
 
@@ -72,10 +72,10 @@ class ChatRepositoryTest {
         long chatId = 2;
         long notExistsChatId = 10100;
         List<ChatMessageEntity> entities = Arrays.asList(
-                new ChatMessageEntity(2000,chatId,"Hello",10000, Roles.USER.toString()),
-                new ChatMessageEntity(2001,chatId,"Hi",10000, Roles.USER.toString()),
+                new ChatMessageEntity(2000,chatId,"Hello",10000, ChatRoles.USER.toString()),
+                new ChatMessageEntity(2001,chatId,"Hi",10000, ChatRoles.USER.toString()),
                 new ChatMessageEntity(2002,3,"Tell me something",10001,
-                        Roles.USER.toString())
+                        ChatRoles.USER.toString())
         );
         underTest.saveAll(entities);
 
@@ -92,10 +92,10 @@ class ChatRepositoryTest {
         //given
         long chatId = 2;
         List<ChatMessageEntity> entities = Arrays.asList(
-                new ChatMessageEntity(2000,chatId,"Hello",10000, Roles.USER.toString()),
-                new ChatMessageEntity(2001,chatId,"Hi",10000, Roles.USER.toString()),
+                new ChatMessageEntity(2000,chatId,"Hello",10000, ChatRoles.USER.toString()),
+                new ChatMessageEntity(2001,chatId,"Hi",10000, ChatRoles.USER.toString()),
                 new ChatMessageEntity(2002,3,"Tell me something",10001,
-                        Roles.USER.toString())
+                        ChatRoles.USER.toString())
         );
         underTest.saveAll(entities);
 
@@ -111,10 +111,10 @@ class ChatRepositoryTest {
     void shouldSaveAll() {
         //given
         List<ChatMessageEntity> messages = Arrays.asList(
-                new ChatMessageEntity(1000,1,"Hello",10000, Roles.USER.toString()),
-                new ChatMessageEntity(1001,1,"Hi",10000, Roles.USER.toString()),
+                new ChatMessageEntity(1000,1,"Hello",10000, ChatRoles.USER.toString()),
+                new ChatMessageEntity(1001,1,"Hi",10000, ChatRoles.USER.toString()),
                 new ChatMessageEntity(1002,2,"Tell me something",10001,
-                        Roles.USER.toString())
+                        ChatRoles.USER.toString())
         );
         Iterable<ChatMessageEntity> allMessages = underTest.saveAll(messages);
 

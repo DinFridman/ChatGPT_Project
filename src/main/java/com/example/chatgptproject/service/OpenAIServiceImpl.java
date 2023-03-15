@@ -10,6 +10,8 @@ import com.example.chatgptproject.utils.enums.OpenAiModels;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
@@ -17,10 +19,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class GenerateAnswerService {
+@RequiredArgsConstructor
+@Transactional
+@Slf4j
+public class OpenAIServiceImpl implements OpenAIService{
     private final RestTemplate restTemplate = new RestTemplate();//TODO: DEPENDENCY INJECTION
     private final ObjectMapper objectMapper = new ObjectMapper();//TODO: Dependency Injection
     private final OpenAIPromptDTOMapper openAIPromptDTOMapper;
@@ -28,14 +34,10 @@ public class GenerateAnswerService {
     private HttpEntity<String> requestEntity;
     private static final Logger logger = LogManager.getLogger("generateAnswerService-logger");
 
-    public GenerateAnswerService(OpenAIPromptDTOMapper openAIPromptDTOMapper,
-                                 ChatCompletionDTOMapper chatCompletionDTOMapper) {
-        this.openAIPromptDTOMapper = openAIPromptDTOMapper;
-        this.chatCompletionDTOMapper = chatCompletionDTOMapper;
-    }
 
-    public OpenAIPromptDTO generateAnswer
-            (ConversationDTO conversationDTO) throws JsonProcessingException, JSONException {
+    @Override
+    public OpenAIPromptDTO generateAnswer(ConversationDTO conversationDTO)
+            throws JsonProcessingException, JSONException {
 
         requestEntity = createRequestEntity(conversationDTO);
 
@@ -53,7 +55,8 @@ public class GenerateAnswerService {
     }
 
 
-    private String getDataFromResponse(String json, String dataRequested) throws JsonProcessingException {
+    private String getDataFromResponse(String json, String dataRequested)
+            throws JsonProcessingException {
         JsonNode root = objectMapper.readTree(json);
         String data = objectMapper.treeToValue(
                 root.path("choices")
@@ -61,6 +64,7 @@ public class GenerateAnswerService {
                         .path(dataRequested), String.class);
         return data;
     }
+
 
     private HttpEntity<String> createRequestEntity(
             ConversationDTO conversationDTO) throws JSONException, JsonProcessingException {

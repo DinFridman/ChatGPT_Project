@@ -1,12 +1,11 @@
 package com.example.chatgptproject.utils.enums;
 
-public enum Roles {
-    SYSTEM("system"),
-    USER("user"),
-    ASSISTANCE("assistant");
+public enum AppRoles {
+    ADMIN("admin"),
+    USER("user");
     private String role;
 
-    Roles(String role) {
+    AppRoles(String role) {
         this.role = role;
     }
 
