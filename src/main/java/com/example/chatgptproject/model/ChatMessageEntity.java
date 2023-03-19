@@ -16,14 +16,8 @@ import lombok.Setter;
 public class ChatMessageEntity {
 
     @Id
-    @SequenceGenerator(
-            name = "message_sequence",
-            sequenceName = "message_sequence",
-            allocationSize = 1
-    )
     @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "message_sequence"
+            strategy = GenerationType.IDENTITY
     )
     @Column(
             name = "message_id",
@@ -66,11 +60,13 @@ public class ChatMessageEntity {
     private String appRole;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",
-            referencedColumnName = "user_id",
-            insertable = false,
-            updatable = false)
-    private UserEntity user;
+    @JoinTable(name = "user_messages",
+        joinColumns = @JoinColumn(name = "message_id",
+            referencedColumnName = "message_id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName = "user_id")
+    )
+        private AppUser user;
 
     public ChatMessageEntity(long updateId,
                              long chatId,

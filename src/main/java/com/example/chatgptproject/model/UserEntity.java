@@ -1,7 +1,5 @@
 package com.example.chatgptproject.model;
 
-
-import com.example.chatgptproject.utils.enums.Roles;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,22 +13,11 @@ import java.util.Collection;
 @Setter
 @Entity(name = "UserEntity")
 @NoArgsConstructor
-@Table(
-        name = "users",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "user_email_phone_unique",
-                        columnNames = {"email","phone_number"})//TODO: Add userName,password
-        })
+@Table(name = "users")
 public class UserEntity {
     @Id
-    @SequenceGenerator(
-            name = "user_sequence",
-            sequenceName = "user_sequence",
-            allocationSize = 1
-    )
     @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "user_sequence"
+            strategy = GenerationType.IDENTITY
     )
     @Column(
             name = "user_id",
@@ -54,7 +41,8 @@ public class UserEntity {
     @Column(
             name = "email",
             nullable = false,
-            columnDefinition = "TEXT"
+            columnDefinition = "TEXT",
+            unique = true
     )
     private String email;
 
@@ -81,7 +69,8 @@ public class UserEntity {
     @Column(
             name = "password",
             nullable = false,
-            columnDefinition = "TEXT"
+            columnDefinition = "TEXT",
+            unique = true
     )
     private String password;
 
@@ -92,8 +81,8 @@ public class UserEntity {
     )
     private String role;
 
-    @OneToMany(mappedBy = "user")
-    private Collection<ChatMessageEntity> conversation = new ArrayList<>();
+    //@OneToMany(mappedBy = "user")
+    //private Collection<ChatMessageEntity> conversation = new ArrayList<>();
 
     public UserEntity(String firstName,
                       String lastName,
