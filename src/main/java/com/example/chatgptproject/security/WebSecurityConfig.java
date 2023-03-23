@@ -1,10 +1,15 @@
 package com.example.chatgptproject.security;
+import com.example.chatgptproject.security.jwt.AuthEntryPoint;
+import com.example.chatgptproject.security.jwt.JwtAuthFilter;
+import com.example.chatgptproject.security.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableMBeanExport;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,9 +21,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity
+@DependsOn("applicationConfig")
 public class WebSecurityConfig {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final JwtAuthenticationEntryPoint jwtEntryPoint;
+    private final JwtAuthFilter jwtAuthFilter;
+    private final AuthEntryPoint jwtEntryPoint;
+    private final UserDetailsServiceImpl userDetailsService;
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+
+        return authProvider;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -32,34 +50,21 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public JWTGenerator jwtGenerator() {return new JWTGenerator();}
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+                .cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(jwtEntryPoint)
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeHttpRequests((authz) -> {
-                            try {
-                                authz
-                                        .requestMatchers("/api/users/**")
-                                        .permitAll()
-                                        .anyRequest()
-                                        .authenticated()
-                                        .and()
-                                        .httpBasic()
-                                        .and()
-                                        .addFilterBefore(jwtAuthenticationFilter,UsernamePasswordAuthenticationFilter.class);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                );
+                .authorizeHttpRequests()
+                .requestMatchers("api/users/**").authenticated()
+                .anyRequest().permitAll();
+
+        http.authenticationProvider(authenticationProvider());
+        http.addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
-
 }

@@ -1,16 +1,20 @@
-package com.example.chatgptproject.security;
+package com.example.chatgptproject.security.jwt;
 
+import com.example.chatgptproject.security.SecurityConstants;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
+
 import java.util.Date;
 import java.util.function.Function;
 
 @Log4j2
 @RequiredArgsConstructor
-public class JWTGenerator {
+@Component
+public class JWTUtils {
     @Value("${jwt.secret}")
     private String secret;
 
@@ -27,9 +31,7 @@ public class JWTGenerator {
                 .compact();
     }
 
-    public String getUsernameFromToken(String token) {
-        return getClaimFromToken(token, Claims::getSubject);
-    }
+    public String getUsernameFromToken(String token) {return getClaimFromToken(token, Claims::getSubject);}
 
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();

@@ -1,7 +1,11 @@
-package com.example.chatgptproject.security;
+package com.example.chatgptproject.controller;
 
 import com.example.chatgptproject.model.AppUser;
 import com.example.chatgptproject.repository.AppUserRepository;
+import com.example.chatgptproject.security.payload.response.AuthResponse;
+import com.example.chatgptproject.security.dto.LoginDTO;
+import com.example.chatgptproject.security.dto.RegisterDTO;
+import com.example.chatgptproject.security.jwt.JWTUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -18,9 +22,9 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @Log4j2
 @RequestMapping("/api/users")
-public class JwtAuthenticationController {
+public class AuthenticationController {
     private AuthenticationManager authenticationManager;
-    private JWTGenerator jwtGenerator;
+    private JWTUtils jwtUtils;
     private AppUserRepository appUserRepository;
     private PasswordEncoder passwordEncoder;
 
@@ -40,7 +44,7 @@ public class JwtAuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginDTO loginDTO) {
         Authentication authentication =
                 authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(
@@ -48,7 +52,7 @@ public class JwtAuthenticationController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         log.info("User signed in successfully!");
 
-        String token = jwtGenerator.generateToken(authentication);
-        return new ResponseEntity<>(new AuthResponseDTO(token), HttpStatus.OK);
+        String token = jwtUtils.generateToken(authentication);
+        return new ResponseEntity<>(new AuthResponse(token), HttpStatus.OK);
     }
 }

@@ -1,13 +1,13 @@
-package com.example.chatgptproject.security;
+package com.example.chatgptproject.security.payload.response;
 
 import lombok.Data;
 
 @Data
-public class AuthResponseDTO {
+public class AuthResponse {
     private String accessToken;
     private String tokenType = "Bearer ";
 
-    public AuthResponseDTO(String accessToken) {
+    public AuthResponse(String accessToken) {
         this.accessToken = accessToken;
     }
 }

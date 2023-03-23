@@ -1,4 +1,4 @@
-package com.example.chatgptproject.security;
+package com.example.chatgptproject.security.dto;
 
 import lombok.Data;
 import lombok.Getter;
