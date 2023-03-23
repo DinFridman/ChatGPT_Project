@@ -59,7 +59,7 @@ public class WebSecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("api/users/**").authenticated()
+                .requestMatchers("/api/telegram/**").authenticated()
                 .anyRequest().permitAll();
 
         http.authenticationProvider(authenticationProvider());

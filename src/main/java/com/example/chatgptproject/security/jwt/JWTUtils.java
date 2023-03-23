@@ -2,14 +2,21 @@ package com.example.chatgptproject.security.jwt;
 
 import com.example.chatgptproject.security.SecurityConstants;
 import io.jsonwebtoken.*;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.WebUtils;
 
 import java.util.Date;
 import java.util.function.Function;
+
+import static com.example.chatgptproject.security.SecurityConstants.JWT_EXPIRATION;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -17,11 +24,32 @@ import java.util.function.Function;
 public class JWTUtils {
     @Value("${jwt.secret}")
     private String secret;
+    @Value("${jwt.cookieName}")
+    private String jwtCookie;
 
-    public String generateToken(Authentication authentication) {
-        String username = authentication.getName();
+    public String getJwtFromCookies(HttpServletRequest request) {
+        Cookie cookie = WebUtils.getCookie(request, jwtCookie);
+        if (cookie != null) {
+            return cookie.getValue();
+        } else {
+            return null;
+        }
+    }
+
+    public ResponseCookie generateJwtCookie(UserDetails userPrincipal) {
+        String jwt = generateToken(userPrincipal.getUsername());
+        ResponseCookie cookie = ResponseCookie
+                .from(jwtCookie, jwt)
+                .path("/api")
+                .maxAge(JWT_EXPIRATION)
+                .httpOnly(true)
+                .build();
+        return cookie;
+    }
+
+    public String generateToken(String username) {
         Date currentDate = new Date();
-        Date expiredDate = new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRATION);
+        Date expiredDate = new Date(currentDate.getTime() + JWT_EXPIRATION);
 
         return Jwts.builder()
                 .setSubject(username)

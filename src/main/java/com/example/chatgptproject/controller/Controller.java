@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.telegram.telegrambots.api.objects.Update;
 
 @RestController
+@RequestMapping("/api/telegram")
 public class Controller {
     private final RequestService requestService;
     private static final Logger logger = LogManager.getLogger("controller-logger");
@@ -27,7 +28,7 @@ public class Controller {
         this.chatMessageDTOMapper = chatMessageDTOMapper;
     }
 
-    @PostMapping("/")
+    @PostMapping("/generateAnswer")
     public ResponseEntity<ChatAnswerDTO> generateAnswer(@RequestBody Update request) throws JsonProcessingException, JSONException {
         logger.info("---------------Request : " + request + " ---------------");
 
