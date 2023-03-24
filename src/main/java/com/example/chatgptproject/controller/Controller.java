@@ -1,12 +1,10 @@
 package com.example.chatgptproject.controller;
 
-import com.example.chatgptproject.dto.ChatAnswerDTO;
+import com.example.chatgptproject.dto.TelegramResponseDTO;
 import com.example.chatgptproject.dto.mapper.ChatMessageDTOMapper;
-import com.example.chatgptproject.service.RequestService;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.example.chatgptproject.service.ChatCompletionRequestService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,22 +16,22 @@ import org.telegram.telegrambots.api.objects.Update;
 @RestController
 @RequestMapping("/api/telegram")
 public class Controller {
-    private final RequestService requestService;
+    private final ChatCompletionRequestService chatCompletionRequestService;
     private static final Logger logger = LogManager.getLogger("controller-logger");
     private final ChatMessageDTOMapper chatMessageDTOMapper;
 
-    public Controller(RequestService requestService,
+    public Controller(ChatCompletionRequestService chatCompletionRequestService,
                       ChatMessageDTOMapper chatMessageDTOMapper) {
-        this.requestService = requestService;
+        this.chatCompletionRequestService = chatCompletionRequestService;
         this.chatMessageDTOMapper = chatMessageDTOMapper;
     }
 
     @PostMapping("/generateAnswer")
-    public ResponseEntity<ChatAnswerDTO> generateAnswer(@RequestBody Update request) throws JsonProcessingException, JSONException {
+    public ResponseEntity<TelegramResponseDTO> generateAnswer(@RequestBody Update request) throws Exception {
         logger.info("---------------Request : " + request + " ---------------");
 
-        ChatAnswerDTO response = requestService
-                .generateAnswer(chatMessageDTOMapper.mapToDTO(request));
+        TelegramResponseDTO response = chatCompletionRequestService
+                .handleTelegramRequest(chatMessageDTOMapper.mapToDTO(request));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

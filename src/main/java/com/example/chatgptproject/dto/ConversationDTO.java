@@ -1,6 +1,7 @@
 package com.example.chatgptproject.dto;
 
 
+import com.example.chatgptproject.dto.openAI.OpenAIPromptDTO;
 import lombok.Builder;
 import lombok.Data;
 
