@@ -2,6 +2,8 @@ package com.example.chatgptproject.controller;
 
 import com.example.chatgptproject.dto.TelegramResponseDTO;
 import com.example.chatgptproject.dto.mapper.ChatMessageDTOMapper;
+import com.example.chatgptproject.model.EmailDetails;
+import com.example.chatgptproject.service.EmailServiceImpl;
 import com.example.chatgptproject.service.TelegramRequestHandler;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -20,6 +22,7 @@ public class Controller {
     private final TelegramRequestHandler telegramRequestHandler;
     private static final Logger logger = LogManager.getLogger("controller-logger");
     private final ChatMessageDTOMapper chatMessageDTOMapper;
+    private final EmailServiceImpl emailService;
 
     @PostMapping("/generateAnswer")
     public ResponseEntity<TelegramResponseDTO> generateAnswer(@RequestBody Update request)
@@ -29,6 +32,18 @@ public class Controller {
         TelegramResponseDTO response = telegramRequestHandler
                 .handleTelegramRequest(chatMessageDTOMapper.mapToDTO(request));
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    // Sending a simple Email
+    @PostMapping("/sendMail")
+    public String
+    sendMail(@RequestBody EmailDetails details)
+    {
+        String status
+                = emailService.sendSimpleMail(details);
+
+        return status;
     }
 
 }

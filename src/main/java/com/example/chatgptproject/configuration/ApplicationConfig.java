@@ -4,6 +4,7 @@ import com.example.chatgptproject.dto.mapper.OpenAIRequestDTOMapper;
 import com.example.chatgptproject.dto.mapper.ChatMessageDTOMapper;
 import com.example.chatgptproject.dto.mapper.OpenAIPromptDTOMapper;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
+import com.example.chatgptproject.model.EmailDetails;
 import com.example.chatgptproject.model.mapper.ChatMessageMapper;
 import com.example.chatgptproject.security.dto.LoginUserDTOMapper;
 import com.example.chatgptproject.security.dto.RegisterDTOMapper;
@@ -11,9 +12,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+import java.util.Properties;
 
 @Configuration("applicationConfig")
 public class ApplicationConfig {
@@ -45,4 +50,6 @@ public class ApplicationConfig {
     @Bean
     public LoginUserDTOMapper loginUserDTOMapper() {return new LoginUserDTOMapper();}
 
+    @Bean
+    public EmailDetails emailDetails() {return new EmailDetails();}
 }
