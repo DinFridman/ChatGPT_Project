@@ -6,11 +6,11 @@ import org.telegram.telegrambots.api.objects.Update;
 public class ChatMessageDTOMapper {
     public ChatMessageDTO mapToDTO(Update update) {
         return ChatMessageDTO.builder()
-                    .updateId(update.getUpdateId())
+                    .updateId(update.getUpdateId().longValue())
                             .chatId(update.getMessage().getChatId())
                                     .message(update.getMessage().getText())
                                             .chatId(update.getMessage().getChatId())
-                                                    .userId(update.getMessage().getFrom().getId())
+                                                    .userId(update.getMessage().getFrom().getId().longValue())
                                                             .role(Constants.USER_ROLE)
                 .build();
     }

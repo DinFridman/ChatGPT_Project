@@ -1,5 +1,6 @@
 package com.example.chatgptproject.security.service;
 
+import com.example.chatgptproject.exception.register.UserIsRegisteredException;
 import com.example.chatgptproject.model.AppUser;
 import com.example.chatgptproject.repository.AppUserRepository;
 import com.example.chatgptproject.security.dto.LoginUserDTO;
@@ -22,9 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
     private final AppUserRepository appUserRepository;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JWTUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public ResponseCookie loginUser(LoginUserDTO loginUserDTO) {
@@ -41,17 +42,25 @@ public class AuthService {
     }
 
     @Transactional
-    public Boolean registerUser(RegisterDTO registerDTO) {
+    public void registerUser(RegisterDTO registerDTO) {
         if(appUserRepository.existsAppUserByUsername(registerDTO.getUsername()))
-            return false;
+            throw new UserIsRegisteredException();
 
-        AppUser user = new AppUser();
-        user.setUsername(registerDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        AppUser user = createAppUser(registerDTO);
         appUserRepository.save(user);
 
         log.info("user saved successfully!");
+    }
 
-        return true;
+    public ResponseCookie logoutUser() {
+        return jwtUtils.getCleanJwtCookie();
+    }
+
+    public AppUser createAppUser(RegisterDTO registerDTO) {
+        AppUser user = new AppUser();
+        user.setUsername(registerDTO.getUsername());
+        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+
+        return user;
     }
 }

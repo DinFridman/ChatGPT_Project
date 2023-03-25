@@ -7,6 +7,7 @@ public class TelegramResponseDTOMapper {
         return TelegramResponseDTO.builder()
                 .chatId(chatId)
                 .message(message)
+                .method("sendMessage")
                 .build();
     }
 }

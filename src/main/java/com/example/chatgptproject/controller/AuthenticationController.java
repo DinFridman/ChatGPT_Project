@@ -3,6 +3,7 @@ package com.example.chatgptproject.controller;
 import com.example.chatgptproject.security.dto.LoginUserDTO;
 import com.example.chatgptproject.security.payload.request.AuthRequest;
 import com.example.chatgptproject.security.dto.RegisterDTO;
+import com.example.chatgptproject.security.payload.request.RegisterRequest;
 import com.example.chatgptproject.security.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -24,18 +25,25 @@ public class AuthenticationController {
     private ModelMapper modelMapper;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody AuthRequest authRequest) {
-        if(authService.registerUser(modelMapper.map(authRequest,RegisterDTO.class)))
-            return new ResponseEntity<>("user saved successfully!", HttpStatus.OK);
-
-        return new ResponseEntity<>("username is taken!", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
+        authService.registerUser(modelMapper.map(registerRequest,RegisterDTO.class));
+        return new ResponseEntity<>("user saved successfully!", HttpStatus.OK);
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody AuthRequest authRequest) {
-        ResponseCookie cookie = authService.loginUser(modelMapper.map(authRequest, LoginUserDTO.class));
+        ResponseCookie cookie = authService.loginUser(
+                modelMapper.map(authRequest, LoginUserDTO.class));
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body("user logged in successfully.");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser() {
+        ResponseCookie cookie = authService.logoutUser();
+        log.info("user logged out successfully.");
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body("user logged out successfully.");
     }
 }

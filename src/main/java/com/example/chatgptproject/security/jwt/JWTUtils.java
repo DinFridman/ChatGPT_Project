@@ -84,4 +84,14 @@ public class JWTUtils {
         }
         return false;
     }
+
+    public ResponseCookie getCleanJwtCookie() {
+        ResponseCookie cookie = ResponseCookie
+                .from(jwtCookie, null)
+                .path("/api")
+                .maxAge(0)
+                .httpOnly(true)
+                .build();
+        return cookie;
+    }
 }

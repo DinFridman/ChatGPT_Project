@@ -7,4 +7,5 @@ import lombok.Data;
 public class TelegramResponseDTO {
     private String message;
     private Long chatId;
+    private String method;
 }

@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-
 @Getter
 @Setter
 @Entity(name = "AppUser")
@@ -42,8 +40,22 @@ public class AppUser {
     @JsonIgnore
     private String password;
 
-    //@OneToMany(mappedBy = "user")
-    //private ArrayList<ChatMessageEntity> messages;
+    @Column(
+            name = "email",
+            updatable = false,
+            columnDefinition = "TEXT",
+            unique = true
+    )
+    @JsonIgnore
+    private String email;
 
+    @Column(
+            name = "phone_number",
+            updatable = false,
+            unique = true,
+            columnDefinition = "TEXT"
+    )
+    @JsonIgnore
+    private String phoneNumber;
 
 }

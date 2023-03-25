@@ -15,8 +15,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class ChatCompletionRequestServiceTest {
-    @InjectMocks private ChatCompletionRequestService underTest;
+class TelegramRequestHandlerTest {
+    @InjectMocks private TelegramRequestHandler underTest;
     @Mock private OpenAIRequestHandler generateAnswerService;
     @Mock private MessagesService messagesService;
     @Captor private ArgumentCaptor<ChatMessageEntity> captor;

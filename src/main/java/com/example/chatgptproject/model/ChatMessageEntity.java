@@ -5,14 +5,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity(name = "ChatMessageEntity")
-@Table(
-        name = "chat_messages"
-    )
+@Table(name = "chat_messages")
 public class ChatMessageEntity {
 
     @Id
@@ -47,48 +47,38 @@ public class ChatMessageEntity {
     private String message;
 
     @Column(
-            name = "user_id",
-            nullable = false
-    )
-    private Long userId;
-
-    @Column(
             name = "app_role",
             nullable = false,
             columnDefinition = "TEXT"
     )
-    private String appRole;
+    private String conversationRole;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_messages",
-        joinColumns = @JoinColumn(name = "message_id",
-            referencedColumnName = "message_id"),
-            inverseJoinColumns = @JoinColumn(
-                    name = "user_id", referencedColumnName = "user_id")
-    )
-        private AppUser user;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name="user_id", nullable = false)
+    @OnDelete(action= OnDeleteAction.CASCADE)
+    private AppUser user;
 
-    public ChatMessageEntity(long updateId,
-                             long chatId,
+    public ChatMessageEntity(Long updateId,
+                             Long chatId,
                              String message,
-                             long userId,
-                             String appRole) {
+                             String conversationRole,
+                             AppUser user) {
         this.updateId = updateId;
         this.chatId = chatId;
         this.message = message;
-        this.userId = userId;
-        this.appRole = appRole;
+        this.conversationRole = conversationRole;
+        this.user = user;
     }
-
 
     @Override
     public String toString() {
         return "ChatMessageEntity{" +
-                "updateId=" + updateId +
+                "messageId=" + messageId +
+                ", updateId=" + updateId +
                 ", chatId=" + chatId +
                 ", message='" + message + '\'' +
-                ", userId=" + userId +
-                ", appRole='" + appRole + '\'' +
+                ", conversationRole='" + conversationRole + '\'' +
+                ", user=" + user +
                 '}';
     }
 }
