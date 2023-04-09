@@ -1,12 +1,13 @@
 package com.example.chatgptproject.controller;
 
+import com.example.chatgptproject.bot.TelegramBot;
 import com.example.chatgptproject.security.dto.LoginUserDTO;
 import com.example.chatgptproject.security.payload.request.AuthRequest;
 import com.example.chatgptproject.security.dto.RegisterDTO;
 import com.example.chatgptproject.security.payload.request.RegisterRequest;
 import com.example.chatgptproject.security.service.AuthService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
@@ -17,12 +18,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Log4j2
 @RequestMapping("/api/auth")
 public class AuthenticationController {
-    private AuthService authService;
-    private ModelMapper modelMapper;
+    private final AuthService authService;
+    private final ModelMapper modelMapper;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
@@ -30,7 +31,7 @@ public class AuthenticationController {
         return new ResponseEntity<>("user saved successfully!", HttpStatus.OK);
     }
 
-    @PostMapping("/login")
+    @GetMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody AuthRequest authRequest) {
         ResponseCookie cookie = authService.loginUser(
                 modelMapper.map(authRequest, LoginUserDTO.class));

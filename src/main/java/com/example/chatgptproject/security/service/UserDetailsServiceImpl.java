@@ -1,6 +1,6 @@
 package com.example.chatgptproject.security.service;
 
-import com.example.chatgptproject.model.AppUser;
+import com.example.chatgptproject.model.AppUserEntity;
 import com.example.chatgptproject.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,7 +25,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         if(appUserRepository.existsAppUserByUsername(username))
             log.info("user exists!");
-        Optional<AppUser> user = appUserRepository.findAppUserByUsername(username);
+        Optional<AppUserEntity> user = appUserRepository.findAppUserByUsername(username);
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("username Not found" + username);
         }

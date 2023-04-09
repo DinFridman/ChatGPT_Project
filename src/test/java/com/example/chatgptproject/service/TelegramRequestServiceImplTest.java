@@ -15,10 +15,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class TelegramRequestHandlerTest {
-    @InjectMocks private TelegramRequestHandler underTest;
-    @Mock private OpenAIRequestHandler generateAnswerService;
-    @Mock private MessagesService messagesService;
+class TelegramRequestServiceImplTest {
+    @InjectMocks private TelegramRequestServiceImpl underTest;
+    @Mock private OpenAIRequestHandlerImpl generateAnswerService;
+    @Mock private MessagesServiceImpl messagesServiceImpl;
     @Captor private ArgumentCaptor<ChatMessageEntity> captor;
 
 

@@ -1,7 +1,7 @@
 package com.example.chatgptproject.dto.mapper;
 import com.example.chatgptproject.dto.ChatMessageDTO;
 import com.example.chatgptproject.utils.Constants;
-import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 public class ChatMessageDTOMapper {
     public ChatMessageDTO mapToDTO(Update update) {

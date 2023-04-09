@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -56,13 +57,14 @@ public class ChatMessageEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="user_id", nullable = false)
     @OnDelete(action= OnDeleteAction.CASCADE)
-    private AppUser user;
+    private AppUserEntity user;
+
 
     public ChatMessageEntity(Long updateId,
                              Long chatId,
                              String message,
                              String conversationRole,
-                             AppUser user) {
+                             AppUserEntity user) {
         this.updateId = updateId;
         this.chatId = chatId;
         this.message = message;

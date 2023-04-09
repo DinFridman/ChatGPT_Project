@@ -1,4 +1,4 @@
-package com.example.chatgptproject.security;
+package com.example.chatgptproject.configuration;
 import com.example.chatgptproject.security.jwt.AuthEntryPoint;
 import com.example.chatgptproject.security.jwt.JwtAuthFilter;
 import com.example.chatgptproject.security.service.UserDetailsServiceImpl;
@@ -51,16 +51,16 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .cors().and().csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(jwtEntryPoint)
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeHttpRequests()
-                .requestMatchers("/api/telegram/**").authenticated()
-                .anyRequest().permitAll();
+            http
+                    .cors().and().csrf().disable()
+                    .exceptionHandling().authenticationEntryPoint(jwtEntryPoint)
+                    .and()
+                    .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
+                    .authorizeHttpRequests()
+                    .requestMatchers("/api/telegram/**").authenticated()
+                    .anyRequest().permitAll();
 
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class);

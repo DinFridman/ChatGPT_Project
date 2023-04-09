@@ -2,16 +2,19 @@ package com.example.chatgptproject.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Objects;
 
 @Getter
 @Setter
 @Entity(name = "AppUser")
 @NoArgsConstructor
 @Table(name = "app_users")
-public class AppUser {
+public class AppUserEntity {
     @Id
     @GeneratedValue(
             strategy = GenerationType.IDENTITY
@@ -40,13 +43,8 @@ public class AppUser {
     @JsonIgnore
     private String password;
 
-    @Column(
-            name = "email",
-            updatable = false,
-            columnDefinition = "TEXT",
-            unique = true
-    )
     @JsonIgnore
+    @Email
     private String email;
 
     @Column(
@@ -58,4 +56,28 @@ public class AppUser {
     @JsonIgnore
     private String phoneNumber;
 
+
+    @Override
+    public String toString() {
+        return "AppUserEntity{" +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AppUserEntity that = (AppUserEntity) o;
+        return Objects.equals(userId, that.userId) && Objects.equals(username, that.username) && Objects.equals(password, that.password) && Objects.equals(email, that.email) && Objects.equals(phoneNumber, that.phoneNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, username, password, email, phoneNumber);
+    }
 }

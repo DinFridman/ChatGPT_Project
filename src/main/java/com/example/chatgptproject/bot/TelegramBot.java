@@ -1,47 +1,93 @@
 package com.example.chatgptproject.bot;
 
-import com.example.chatgptproject.utils.Constants;
-import org.springframework.http.HttpEntity;
+import com.example.chatgptproject.dto.ChatMessageDTO;
+import com.example.chatgptproject.dto.TelegramResponseDTO;
+import com.example.chatgptproject.dto.mapper.ChatMessageDTOMapper;
+import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
+import com.example.chatgptproject.service.TelegramGatewayService;
+import com.example.chatgptproject.service.TelegramRequestService;
+import com.example.chatgptproject.service.TelegramRequestServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
-public class TelegramBot {
+import static com.example.chatgptproject.utils.Constants.*;
 
-    public void sendMessage(String chatId, String text) {
-        String url = "https://api.telegram.org/bot"
-                + Constants.TELEGRAM_BOT_TOKEN
-                + "/sendMessage";
+@Component
+@RequiredArgsConstructor
+@Log4j2
+public class TelegramBot extends TelegramLongPollingBot {
+    private final ObjectMapper objectMapper;
+    private final TelegramGatewayService telegramGatewayService;
+    private final ChatMessageDTOMapper chatMessageDTOMapper;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+    @Override
+    public void onUpdateReceived(Update update) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            ChatMessageDTO chatMessageDTO = chatMessageDTOMapper.mapToDTO(update);
+            TelegramResponseDTO telegramResponseDTO = null;
+            try {
+                telegramResponseDTO = telegramGatewayService.telegramRequestsGateway(chatMessageDTO);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        String json = "{\"chat_id\":\"" + chatId + "\",\"text\":\"" + text + "\"}";
-        HttpEntity<String> entity = new HttpEntity<>(json, headers);
-
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.postForEntity(url, entity, String.class);
+            try {
+                sendTelegramMessage(telegramResponseDTO);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public void sendLoginMessage(Long chatId) {
-        sendMessage(chatId.toString(),
-                "Please enter your password to register or login."
-                        + " send /register or /login and then your password.");
+    public void sendTelegramMessage(TelegramResponseDTO telegramResponseDTO)
+            throws IOException, InterruptedException {
+
+        String body = getMessageAsString(telegramResponseDTO);
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest telegramRequest = createTelegramHttpRequest(body);
+
+        log.info("telegram Response sent successfully.");
+        log.debug("telegramResponseDTO content : {}",telegramResponseDTO);
+
+        String response = client.send(telegramRequest, HttpResponse.BodyHandlers.ofString()).body();
+        log.info("Telegram Server Response: {}", response);
     }
 
-    public void sendRegisteredMessage(Long chatId) {
-        sendMessage(chatId.toString(), "user registered successfully!");
+    public HttpRequest createTelegramHttpRequest(String body) {
+        URI uri = createTelegramRequestURI();
+        return HttpRequest.newBuilder().uri(uri)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .POST(HttpRequest.BodyPublishers.ofString(body)).build();
     }
 
-    public void sendLoggedInMessage(Long chatId) {
-        sendMessage(chatId.toString(), "user logged in successfully!");
+    private String getMessageAsString(TelegramResponseDTO telegramResponseDTO)
+            throws JsonProcessingException {
+        return objectMapper.writeValueAsString(telegramResponseDTO);
     }
 
+    private URI createTelegramRequestURI() {
+        return URI.create(TELEGRAM_URL + TELEGRAM_BOT_TOKEN + SEND_MESSAGE_URL);
+    }
+
+    @Override
     public String getBotUsername() {
-        return Constants.TELEGRAM_BOT_NAME;
+        return TELEGRAM_BOT_NAME;
     }
 
+    @Override
     public String getBotToken() {
-        return Constants.TELEGRAM_BOT_TOKEN;
+        return TELEGRAM_BOT_TOKEN;
     }
 }

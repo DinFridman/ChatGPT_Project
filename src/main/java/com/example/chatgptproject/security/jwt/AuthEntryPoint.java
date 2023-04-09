@@ -14,6 +14,6 @@ public class AuthEntryPoint implements org.springframework.security.web.Authenti
                          AuthenticationException authException) throws IOException {
 
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED
-                , "Unauthorized user! " + authException.getMessage());
+                ,   "Unauthorized user! " + authException.getMessage());
     }
 }
