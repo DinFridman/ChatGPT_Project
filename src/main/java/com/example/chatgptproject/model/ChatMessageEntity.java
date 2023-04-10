@@ -8,6 +8,8 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.time.LocalDate;
+
 
 @Getter
 @Setter
@@ -59,17 +61,25 @@ public class ChatMessageEntity {
     @OnDelete(action= OnDeleteAction.CASCADE)
     private AppUserEntity user;
 
+    @Column(
+            name = "sent_date"
+    )
+    @Temporal(TemporalType.DATE)
+    private LocalDate sentDate;
+
 
     public ChatMessageEntity(Long updateId,
                              Long chatId,
                              String message,
                              String conversationRole,
-                             AppUserEntity user) {
+                             AppUserEntity user,
+                             LocalDate sentDate) {
         this.updateId = updateId;
         this.chatId = chatId;
         this.message = message;
         this.conversationRole = conversationRole;
         this.user = user;
+        this.sentDate = sentDate;
     }
 
     @Override

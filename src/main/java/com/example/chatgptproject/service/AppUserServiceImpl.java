@@ -10,6 +10,8 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -38,6 +40,12 @@ public class AppUserServiceImpl implements AppUserService {
         log.info("user saved successfully.");
         log.debug("saved user details: " + appUser);
 
+        appUserRepository.save(appUser);
+    }
+
+    public void updateAppUserLoggedInDate(String username) {
+        AppUserEntity appUser = getAppUser(username);
+        appUser.setLoggedInDate(LocalDate.now());
         appUserRepository.save(appUser);
     }
 

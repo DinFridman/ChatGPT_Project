@@ -25,13 +25,12 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
     @Transactional
     public TelegramResponseDTO handleTelegramRequest(ChatMessageDTO chatMessageDTO)
             throws IOException, InterruptedException {
+        addUserMessageToConversation(chatMessageDTO);
         ConversationDTO conversationDTO = getCurrentConversation(chatMessageDTO.getChatId());
 
         if(isShareConversationRequest(chatMessageDTO))
             return handleShareConversationRequestAndReturnResponse(
                     conversationDTO,chatMessageDTO);
-
-        addUserMessageToConversation(chatMessageDTO);
 
         OpenAIPromptDTO openAIPromptDTO = generateAnswerByRequestHandler(conversationDTO);
 

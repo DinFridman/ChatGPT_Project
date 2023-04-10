@@ -1,6 +1,5 @@
 package com.example.chatgptproject.security.service;
 
-import com.example.chatgptproject.exception.register.UserIsRegisteredException;
 import com.example.chatgptproject.model.AppUserEntity;
 import com.example.chatgptproject.security.dto.LoginUserDTO;
 import com.example.chatgptproject.security.dto.RegisterDTO;
@@ -36,6 +35,8 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         log.info("User signed in successfully!");
 
+        appUserService.updateAppUserLoggedInDate(loginUserDTO.getUsername());
+
         UserDetails userDetails = (UserDetails)authentication.getPrincipal();
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
         return jwtCookie;
@@ -58,7 +59,6 @@ public class AuthService {
         AppUserEntity user = new AppUserEntity();
         user.setUsername(registerDTO.getUsername());
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
-
         return user;
     }
 }

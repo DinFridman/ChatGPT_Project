@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Getter
@@ -56,6 +57,12 @@ public class AppUserEntity {
     @JsonIgnore
     private String phoneNumber;
 
+    @Column(
+            name = "logged_in_date"
+    )
+    @Temporal(TemporalType.DATE)
+    private LocalDate loggedInDate;
+
 
     @Override
     public String toString() {
@@ -65,6 +72,7 @@ public class AppUserEntity {
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", loggedInDate=" + loggedInDate +
                 '}';
     }
 
@@ -72,12 +80,12 @@ public class AppUserEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AppUserEntity that = (AppUserEntity) o;
-        return Objects.equals(userId, that.userId) && Objects.equals(username, that.username) && Objects.equals(password, that.password) && Objects.equals(email, that.email) && Objects.equals(phoneNumber, that.phoneNumber);
+        AppUserEntity appUser = (AppUserEntity) o;
+        return Objects.equals(userId, appUser.userId) && Objects.equals(username, appUser.username) && Objects.equals(password, appUser.password) && Objects.equals(email, appUser.email) && Objects.equals(phoneNumber, appUser.phoneNumber) && Objects.equals(loggedInDate, appUser.loggedInDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, username, password, email, phoneNumber);
+        return Objects.hash(userId, username, password, email, phoneNumber, loggedInDate);
     }
 }

@@ -65,7 +65,7 @@ public class TelegramGatewayService {
 
     public TelegramResponseDTO handleLoginState(Long chatId, String message) {
         String password = message.substring("/login".length()).trim();
-        ResponseCookie cookie = authService.loginUser(
+        authService.loginUser(
                 loginUserDTOMapper.mapToDTO(chatId.toString(),password));
 
         return getTelegramResponseDTO(chatId,"user logged in successfully!");
