@@ -145,6 +145,11 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.orgyflame</groupId>
+            <artifactId>telegram-bot-api-spring-boot-starter</artifactId>
+            <version>5.2.0</version>
+        </dependency>
 
     </dependencies>
 

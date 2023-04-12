@@ -38,7 +38,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             ChatMessageDTO chatMessageDTO = chatMessageDTOMapper.mapToDTO(update);
             TelegramResponseDTO telegramResponseDTO = null;
             try {
-                telegramResponseDTO = telegramGatewayService.telegramRequestsGateway(chatMessageDTO);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

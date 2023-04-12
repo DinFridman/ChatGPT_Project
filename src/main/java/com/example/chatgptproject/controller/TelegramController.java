@@ -1,33 +1,95 @@
 package com.example.chatgptproject.controller;
 
+import com.example.chatgptproject.bot.TelegramBot;
 import com.example.chatgptproject.dto.TelegramResponseDTO;
-import com.example.chatgptproject.security.dto.LoginUserDTOMapper;
-import com.example.chatgptproject.security.service.AuthService;
+import com.example.chatgptproject.dto.mapper.ChatMessageDTOMapper;
 import com.example.chatgptproject.service.TelegramGatewayService;
-import jakarta.validation.Valid;
+import com.orgyflame.springtelegrambotapi.bot.mapping.BotController;
+import com.orgyflame.springtelegrambotapi.bot.mapping.BotMapping;
+import com.orgyflame.springtelegrambotapi.bot.mapping.parameter.ChatParam;
+import com.orgyflame.springtelegrambotapi.bot.mapping.parameter.MessageParam;
+import com.orgyflame.springtelegrambotapi.bot.mapping.parameter.UpdateParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.telegram.telegrambots.meta.api.objects.Chat;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.IOException;
 
-@RestController
-@CrossOrigin
+@BotController
 @RequiredArgsConstructor
 @Log4j2
-@RequestMapping("/api")
 public class TelegramController {
     private final TelegramGatewayService telegramGatewayService;
-    private final AuthService authService;
-    private final LoginUserDTOMapper loginUserDTOMapper;
+    private final TelegramBot telegramBot;
+    private final ChatMessageDTOMapper chatMessageDTOMapper;
 
-   /* @PostMapping("/gateway")
-    public ResponseEntity<TelegramResponseDTO> generateAnswer(@Valid @RequestBody Update request)
+    @BotMapping(value = "/login/createSession")
+    public void createLoginSession(@MessageParam Message message)
             throws IOException, InterruptedException {
-        log.info("---------------Request : " + request + " ---------------");
 
-        return telegramGatewayService.telegramRequestsGateway(request);
-    }*/
+        log.info("---------------username Message : " + message + " ---------------");
+
+        TelegramResponseDTO telegramResponseDTO =
+                telegramGatewayService.createUserLoginSession(message);
+        telegramBot.sendTelegramMessage(telegramResponseDTO);
+    }
+
+    @BotMapping(value = "/login/performLogin")
+    public void performLogin(@MessageParam Message message)
+            throws IOException, InterruptedException {
+        log.info("---------------Password Message : " + message + " ---------------");
+
+        TelegramResponseDTO telegramResponseDTO =
+                telegramGatewayService.performUserLogin(message);
+        telegramBot.sendTelegramMessage(telegramResponseDTO);
+    }
+
+    @BotMapping(value = "/register/createSession")
+    public void createRegistrationSession(@MessageParam Message message)
+            throws IOException, InterruptedException {
+
+        log.info("---------------username Message : " + message + " ---------------");
+
+        TelegramResponseDTO telegramResponseDTO =
+                telegramGatewayService.createUserRegistrationSession(message);
+        telegramBot.sendTelegramMessage(telegramResponseDTO);
+    }
+
+    @BotMapping(value = "/register/performRegistration")
+    public void performRegistration(@MessageParam Message message)
+            throws IOException, InterruptedException {
+
+        log.info("---------------Password Message : " + message + " ---------------");
+
+        TelegramResponseDTO telegramResponseDTO =
+                telegramGatewayService.performUserRegistration(message);
+        telegramBot.sendTelegramMessage(telegramResponseDTO);
+    }
+
+    @BotMapping(value = "/logout")
+    public void performLogout(@ChatParam Chat chat)
+            throws IOException, InterruptedException {
+
+        log.info("---------------user chat details : " + chat + " ---------------");
+
+        TelegramResponseDTO telegramResponseDTO =
+                telegramGatewayService.performLogout(chat.getId());
+        telegramBot.sendTelegramMessage(telegramResponseDTO);
+    }
+
+    @BotMapping
+    public void generateAnswer(@UpdateParam Update update)
+            throws IOException, InterruptedException {
+
+        log.info("---------------chat completion`s update details : " + update + " ---------------");
+
+        TelegramResponseDTO telegramResponseDTO =
+                telegramGatewayService.handleGenerateAnswerState(
+                        chatMessageDTOMapper.mapToDTO(update));
+
+        telegramBot.sendTelegramMessage(telegramResponseDTO);
+    }
+
 }

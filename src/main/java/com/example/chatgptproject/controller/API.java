@@ -31,9 +31,4 @@ public class API {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/hello")
-    public String test() {
-        return "https request has successfully arrived";
-    }
-
 }

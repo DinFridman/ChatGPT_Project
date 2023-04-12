@@ -31,7 +31,7 @@ public class AppUserServiceImpl implements AppUserService {
         return user.get();
     }
 
-    @CachePut(value = "appUsers", key = "#appUser.username")
+
     @Override
     public void addAppUser(AppUserEntity appUser) {
         if(checkIfAppUserExists(appUser.getUsername()))
@@ -43,10 +43,14 @@ public class AppUserServiceImpl implements AppUserService {
         appUserRepository.save(appUser);
     }
 
+    @CachePut(value = "appUsers", key = "#username")
     public void updateAppUserLoggedInDate(String username) {
         AppUserEntity appUser = getAppUser(username);
         appUser.setLoggedInDate(LocalDate.now());
         appUserRepository.save(appUser);
+
+        log.info("AppUser`s loggedIn date updated successfully. the date is : {}",
+                appUser.getLoggedInDate());
     }
 
     public boolean checkIfAppUserExists(String username) {

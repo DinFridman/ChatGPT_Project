@@ -13,4 +13,6 @@ public class LoginUserDTO {
     private String email;
     private String phoneNumber;
     private LocalDate loggedInDate;
+    private Boolean isLoggedIn = false;
+    private Boolean isRegisterRequest = true;
 }
