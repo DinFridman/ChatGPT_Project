@@ -24,11 +24,13 @@ import java.util.Map;
 @Log4j2
 public class TelegramGatewayService {
     private final AuthService authService;
-    private final RegisterDTOMapper registerDTOMapper;
+    private final TelegramRegistrationService telegramRegistrationService;
     private final TelegramResponseDTOMapper telegramResponseDTOMapper;
     private final TelegramRequestServiceImpl telegramRequestServiceImpl;
     private final Map<Long,LoginUserDTO> usersMap = new HashMap<>();
     private final TelegramKeyboardService telegramKeyboardService;
+    private final TelegramUserStateService telegramUserStateService;
+    private final TelegramLoginService telegramLoginService;
 
     public TelegramResponse telegramRequestsGateway(@NotNull Update update)
             throws IOException, InterruptedException {
@@ -47,7 +49,7 @@ public class TelegramGatewayService {
         if(checkIfRegisterButtonPressed(message))
             return startRegisterState(chatId);
 
-        if(checkIfLogoutRequest(message))
+        if(checkIfLogoutButtonPressed(message))
             return handleLogoutRequest(chatId);
 
         if (isRegisterRequest(chatId))
@@ -70,10 +72,6 @@ public class TelegramGatewayService {
         return (message != null && !message.isEmpty());
     }
 
-    private Boolean checkIfUserLoggedIn(Long chatId) {
-        return getLoginUserDTOFromUsersMap(chatId).getIsLoggedIn();
-    }
-
     private LoginUserDTO getLoginUserDTOFromUsersMap(Long chatId) {
         return usersMap.get(chatId);
     }
@@ -84,17 +82,7 @@ public class TelegramGatewayService {
 
     private TelegramResponse startLoginState(Long chatId) {
 
-        if(checkIfUserLoggedIn(chatId))
-            return handleLoginOrRegisterRequestWhenLoggedIn(chatId);
-
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        loginUserDTO.setIsLoginRequest(true);
-        return getTelegramResponseDTO(chatId,"Please enter your username.");
-    }
-
-    private TelegramResponse handleLoginOrRegisterRequestWhenLoggedIn(Long chatId) {
-        return getTelegramResponseDTO(chatId,"You are logged in. \n" +
-                "Please logout and try again.");
+        return telegramUserStateService.startLoginState(chatId);
     }
 
     private Boolean checkIfRegisterButtonPressed(String message) {
@@ -102,16 +90,10 @@ public class TelegramGatewayService {
     }
 
     private TelegramResponse startRegisterState(Long chatId) {
-
-        if(checkIfUserLoggedIn(chatId))
-            return handleLoginOrRegisterRequestWhenLoggedIn(chatId);
-
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        loginUserDTO.setIsRegisterRequest(true);
-        return getTelegramResponseDTO(chatId,"Please enter your username.");
+        return telegramUserStateService.startRegisterState(chatId);
     }
 
-    private Boolean checkIfLogoutRequest(String message) {
+    private Boolean checkIfLogoutButtonPressed(String message) {
         return message.equals("Logout");
     }
 
@@ -149,16 +131,8 @@ public class TelegramGatewayService {
         return getLoginUserDTOFromUsersMap(chatId).getIsLoggedIn();
     }
 
-    private Boolean checkIfUserExists(String username) {
-        return authService.checkIfAppUserExists(username);
-    }
-
     private Boolean checkIfUserHasSession(Long chatId) {
         return usersMap.containsKey(chatId);
-    }
-
-    private TelegramMessageResponseDTO handleUserInRegistrationState(Long chatId) {
-        return getTelegramResponseDTO(chatId,"Please finish registration first.");
     }
 
     private void createNewSessionForUser(Long chatId) {
@@ -170,11 +144,11 @@ public class TelegramGatewayService {
         log.debug("loginUserDTO : {}",loginUserDTO);
     }
 
-    private TelegramResponse handleStartingChatState(Long chatId)
-            throws IOException, InterruptedException {
+    private TelegramResponse handleStartingChatState(Long chatId) {
         createNewSessionForUser(chatId);
 
-        return createTelegramLoginRegisterKeyboardResponse(chatId, "Please login or register.");
+        return createTelegramLoginRegisterKeyboardResponse(chatId,
+                "Please login or register.");
     }
 
     private TelegramResponse createTelegramLoginRegisterKeyboardResponse(Long chatId,
@@ -184,17 +158,11 @@ public class TelegramGatewayService {
     }
 
     private TelegramResponse handleRegisterState(Long chatId, String message) {
-        if(!checkIfUsernameHasBeenSet(chatId))
-            return handleUsernameInputForRegistration(chatId,message);
-
-        return handleUserRegistrationWithPasswordInput(chatId,message);
+        return telegramRegistrationService.handleRegisterState(chatId,message);
     }
 
     private TelegramResponse handleLoginState(Long chatId, String message) {
-        if(!checkIfUsernameHasBeenSet(chatId))
-            return handleUsernameInputForLogin(chatId,message);
-
-        return handleUserLoginWithPasswordInput(chatId,message);
+        return telegramLoginService.handleLoginState(chatId,message);
     }
 
     public TelegramResponse handleGenerateAnswerState(Update update)
@@ -216,120 +184,6 @@ public class TelegramGatewayService {
 
     private Long getChatIdFromUpdate(Update update) {
         return update.getMessage().getChatId();
-    }
-
-    private Boolean checkIfUsernameHasBeenSet(Long chatId) {
-        return getLoginUserDTOFromUsersMap(chatId).getUsername() != null;
-    }
-
-    private TelegramMessageResponseDTO handleStartingState(Long chatId) {
-        return getTelegramResponseDTO(chatId, "Hi");
-    }
-
-    @Transactional
-    public TelegramResponse handleUsernameInputForRegistration(Long chatId, String username) {
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        if (checkIfUserExists(username))
-                return telegramKeyboardService.createTelegramResponseWithLoginRegisterKeyboard(
-                        chatId, "username is already exists!");
-        setUsernameToLoginUserDTO(loginUserDTO, username,chatId);
-
-        log.info("username : {} entered successfully to registration.", username);
-
-        return getTelegramResponseDTO(chatId,
-                "username has successfully entered. Please enter password to register.");
-    }
-
-    @Transactional
-    public TelegramResponse handleUserRegistrationWithPasswordInput(
-            Long chatId, String password) {
-
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-
-        setPasswordToLoginUserDTO(loginUserDTO,password,chatId);
-
-        authService.registerUser(registerDTOMapper.mapToDTO(
-                loginUserDTO.getUsername(),
-                password));
-
-        log.info("user : {} registered successfully.", loginUserDTO.getUsername());
-
-        turnOffRegistrationState(loginUserDTO,chatId);
-
-        return createTelegramLoginRegisterKeyboardResponse(
-                chatId,"You have successfully registered.");
-    }
-
-    @Transactional
-    public TelegramResponse handleUsernameInputForLogin(Long chatId, String username) {
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-            if (!checkIfUserExists(username))
-                return telegramKeyboardService.createTelegramResponseWithLoginRegisterKeyboard(
-                        chatId, "Username does not exists!\n" +
-                                "Please try again.");
-
-        setUsernameToLoginUserDTO(loginUserDTO, username,chatId);
-
-        log.info("username : {} entered successfully to login.", username);
-
-        return getTelegramResponseDTO(chatId,
-                "Username entered successfully.\n" +
-                        "Please enter your password");
-    }
-
-    @Transactional
-    public TelegramResponse handleUserLoginWithPasswordInput(Long chatId, String password) {
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-
-        setPasswordToLoginUserDTO(loginUserDTO,password,chatId);
-
-        authService.loginUser(loginUserDTO);
-        turnOffLogInState(loginUserDTO,chatId);
-
-        log.info("username : {} logged in successfully.", loginUserDTO.getUsername());
-
-        return getTelegramResponseDTO(chatId,"User logged in successfully. " +
-                "\nYou are now connected to ChatGPT.");
-    }
-
-    private void turnOffRegistrationState(LoginUserDTO loginUserDTO,Long chatId) {
-        turnOffUserRegistrationMode(loginUserDTO);
-        resetUsernameAndPasswordToUserLoginDTO(loginUserDTO,chatId);
-    }
-
-    private void turnOffLogInState(LoginUserDTO loginUserDTO,Long chatId) {
-        turnOnUserLoggedInMode(loginUserDTO);
-        turnOffUserLoginMode(loginUserDTO);
-        resetUsernameAndPasswordToUserLoginDTO(loginUserDTO,chatId);
-    }
-
-    private void turnOffUserRegistrationMode(LoginUserDTO loginUserDTO) {
-        loginUserDTO.setIsRegisterRequest(false);
-    }
-
-    private void resetUsernameAndPasswordToUserLoginDTO(LoginUserDTO loginUserDTO,Long chatId) {
-        setPasswordToLoginUserDTO(loginUserDTO,null,chatId);
-        setUsernameToLoginUserDTO(loginUserDTO,null,chatId);
-    }
-
-    private void turnOnUserLoggedInMode(LoginUserDTO loginUserDTO) {
-        loginUserDTO.setIsLoggedIn(true);
-    }
-
-    private void turnOffUserLoginMode(LoginUserDTO loginUserDTO) {
-        loginUserDTO.setIsLoginRequest(false);
-    }
-
-    private void setUsernameToLoginUserDTO(LoginUserDTO loginUserDTO, String username,Long chatId) {
-        loginUserDTO.setUsername(username);
-        addUserToUsersMap(loginUserDTO,chatId);
-        log.info("username has been set to user successfully.");
-    }
-
-    private void setPasswordToLoginUserDTO(LoginUserDTO loginUserDTO, String password, Long chatId) {
-        loginUserDTO.setPassword(password);
-        addUserToUsersMap(loginUserDTO,chatId);
-        log.info("password has been set to user successfully.");
     }
 
     private String extractMetadataFromLoginMessage(String message, String subString) {
