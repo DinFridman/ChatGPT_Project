@@ -8,7 +8,7 @@ public class ChatMessageDTO {
     private final Long updateId;
     private final Long chatId;
     private final String message;
-    private final Long userId;
+    private final String username;
     private final String role;
 
 }

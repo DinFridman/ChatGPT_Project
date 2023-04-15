@@ -1,6 +1,7 @@
 package com.example.chatgptproject.service;
 
 import com.example.chatgptproject.model.ChatMessageEntity;
+import com.example.chatgptproject.service.openAIService.OpenAIRequestHandlerImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;

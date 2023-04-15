@@ -1,6 +1,6 @@
 package com.example.chatgptproject.controller;
 
-import com.example.chatgptproject.dto.TelegramResponseDTO;
+import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.mapper.ChatMessageDTOMapper;
 import com.example.chatgptproject.service.TelegramRequestServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +21,14 @@ public class API {
     private static final Logger logger = LogManager.getLogger("controller-logger");
     private final ChatMessageDTOMapper chatMessageDTOMapper;
 
-    @PostMapping("/generateAnswer")
-    public ResponseEntity<TelegramResponseDTO> generateAnswer(@RequestBody Update request)
+    /*@PostMapping("/generateAnswer")
+    public ResponseEntity<TelegramMessageResponseDTO> generateAnswer(@RequestBody Update request)
             throws IOException, InterruptedException {
         logger.info("---------------Request : " + request + " ---------------");
 
-        TelegramResponseDTO response = telegramRequestServiceImpl
+        TelegramMessageResponseDTO response = telegramRequestServiceImpl
                 .handleTelegramRequest(chatMessageDTOMapper.mapToDTO(request));
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+    }*/
 
 }

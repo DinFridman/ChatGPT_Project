@@ -5,6 +5,7 @@ import com.example.chatgptproject.dto.EmailDetailsDTO;
 import com.example.chatgptproject.model.mapper.ChatMessageMapper;
 import com.example.chatgptproject.security.dto.LoginUserDTOMapper;
 import com.example.chatgptproject.security.dto.RegisterDTOMapper;
+import com.example.chatgptproject.service.TelegramKeyboardService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;

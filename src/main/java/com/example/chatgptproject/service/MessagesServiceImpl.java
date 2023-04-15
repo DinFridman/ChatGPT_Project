@@ -48,7 +48,7 @@ public class MessagesServiceImpl implements MessagesService {
     }
 
     private String extractUsernameFromChatMessageDTO(ChatMessageDTO chatMessageDTO) {
-        return chatMessageDTO.getChatId().toString(); //Appuser`s username is chatId
+        return chatMessageDTO.getUsername();
     }
 
     @Cacheable(value = "conversation", key = "#chatId")

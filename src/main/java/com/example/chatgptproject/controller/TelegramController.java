@@ -1,23 +1,13 @@
 package com.example.chatgptproject.controller;
 
 import com.example.chatgptproject.bot.TelegramBot;
-import com.example.chatgptproject.dto.TelegramResponseDTO;
 import com.example.chatgptproject.dto.mapper.ChatMessageDTOMapper;
 import com.example.chatgptproject.service.TelegramGatewayService;
-import com.orgyflame.springtelegrambotapi.bot.mapping.BotController;
-import com.orgyflame.springtelegrambotapi.bot.mapping.BotMapping;
-import com.orgyflame.springtelegrambotapi.bot.mapping.parameter.ChatParam;
-import com.orgyflame.springtelegrambotapi.bot.mapping.parameter.MessageParam;
-import com.orgyflame.springtelegrambotapi.bot.mapping.parameter.UpdateParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-
-@BotController
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class TelegramController {
@@ -25,7 +15,7 @@ public class TelegramController {
     private final TelegramBot telegramBot;
     private final ChatMessageDTOMapper chatMessageDTOMapper;
 
-    @BotMapping(value = "/login/createSession")
+    /*@BotMapping(value = "/login/createSession")
     public void createLoginSession(@MessageParam Message message)
             throws IOException, InterruptedException {
 
@@ -90,6 +80,6 @@ public class TelegramController {
                         chatMessageDTOMapper.mapToDTO(update));
 
         telegramBot.sendTelegramMessage(telegramResponseDTO);
-    }
+    }*/
 
 }

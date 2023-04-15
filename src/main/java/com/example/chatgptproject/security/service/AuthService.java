@@ -61,4 +61,8 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         return user;
     }
+
+    public Boolean checkIfAppUserExists(String username) {
+        return appUserService.checkIfAppUserExists(username);
+    }
 }

@@ -1,4 +1,4 @@
-package com.example.chatgptproject.service;
+package com.example.chatgptproject.service.openAIService;
 
 import com.example.chatgptproject.dto.openAI.OpenAIPromptDTO;
 import com.example.chatgptproject.dto.openAI.OpenAIResponseDTO;

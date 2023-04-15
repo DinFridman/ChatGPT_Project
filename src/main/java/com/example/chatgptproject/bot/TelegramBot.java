@@ -1,12 +1,11 @@
 package com.example.chatgptproject.bot;
 
 import com.example.chatgptproject.dto.ChatMessageDTO;
-import com.example.chatgptproject.dto.TelegramResponseDTO;
+import com.example.chatgptproject.dto.TelegramKeyBoardMessageDTO;
+import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
+import com.example.chatgptproject.dto.TelegramResponse;
 import com.example.chatgptproject.dto.mapper.ChatMessageDTOMapper;
-import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
 import com.example.chatgptproject.service.TelegramGatewayService;
-import com.example.chatgptproject.service.TelegramRequestService;
-import com.example.chatgptproject.service.TelegramRequestServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +15,17 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.chatgptproject.utils.Constants.*;
 
@@ -35,31 +40,27 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            ChatMessageDTO chatMessageDTO = chatMessageDTOMapper.mapToDTO(update);
-            TelegramResponseDTO telegramResponseDTO = null;
+            TelegramResponse telegramMessageResponseDTO;
             try {
+                telegramMessageResponseDTO =
+                        telegramGatewayService.telegramRequestsGateway(update);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            try {
-                sendTelegramMessage(telegramResponseDTO);
+                sendTelegramMessage(telegramMessageResponseDTO);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void sendTelegramMessage(TelegramResponseDTO telegramResponseDTO)
+    public void sendTelegramMessage(TelegramResponse telegramResponse)
             throws IOException, InterruptedException {
 
-        String body = getMessageAsString(telegramResponseDTO);
+        String body = getTelegramTextMessageAsString(telegramResponse);
+
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest telegramRequest = createTelegramHttpRequest(body);
 
         log.info("telegram Response sent successfully.");
-        log.debug("telegramResponseDTO content : {}",telegramResponseDTO);
 
         String response = client.send(telegramRequest, HttpResponse.BodyHandlers.ofString()).body();
         log.info("Telegram Server Response: {}", response);
@@ -72,9 +73,9 @@ public class TelegramBot extends TelegramLongPollingBot {
                 .POST(HttpRequest.BodyPublishers.ofString(body)).build();
     }
 
-    private String getMessageAsString(TelegramResponseDTO telegramResponseDTO)
+    private String getTelegramTextMessageAsString(TelegramResponse telegramResponse)
             throws JsonProcessingException {
-        return objectMapper.writeValueAsString(telegramResponseDTO);
+        return objectMapper.writeValueAsString(telegramResponse);
     }
 
     private URI createTelegramRequestURI() {

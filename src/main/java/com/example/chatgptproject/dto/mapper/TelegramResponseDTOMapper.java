@@ -1,10 +1,10 @@
 package com.example.chatgptproject.dto.mapper;
 
-import com.example.chatgptproject.dto.TelegramResponseDTO;
+import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 
 public class TelegramResponseDTOMapper {
-    public TelegramResponseDTO mapToDTO(Long chatId, String message) {
-        return TelegramResponseDTO.builder()
+    public TelegramMessageResponseDTO mapToDTO(Long chatId, String message) {
+        return TelegramMessageResponseDTO.builder()
                 .chatId(chatId)
                 .text(message)
                 .build();

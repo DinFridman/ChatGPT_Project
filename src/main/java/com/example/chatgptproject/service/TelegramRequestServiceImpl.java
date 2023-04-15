@@ -1,5 +1,5 @@
 package com.example.chatgptproject.service;
-import com.example.chatgptproject.dto.TelegramResponseDTO;
+import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.ChatMessageDTO;
 import com.example.chatgptproject.dto.ConversationDTO;
 import com.example.chatgptproject.dto.openAI.OpenAIPromptDTO;
@@ -16,14 +16,14 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Log4j2
 public class TelegramRequestServiceImpl implements TelegramRequestService{
-    private final OpenAIRequestHandlerImpl OpenAIRequestHandlerImpl;
+    private final com.example.chatgptproject.service.openAIService.OpenAIRequestHandlerImpl OpenAIRequestHandlerImpl;
     private final MessagesServiceImpl messagesServiceImpl;
     private final TelegramResponseDTOMapper telegramResponseDTOMapper;
     private final EmailServiceImpl emailService;
 
     @Override
     @Transactional
-    public TelegramResponseDTO handleTelegramRequest(ChatMessageDTO chatMessageDTO)
+    public TelegramMessageResponseDTO handleTelegramRequest(ChatMessageDTO chatMessageDTO)
             throws IOException, InterruptedException {
         addUserMessageToConversation(chatMessageDTO);
         ConversationDTO conversationDTO = getCurrentConversation(chatMessageDTO.getChatId());
@@ -47,7 +47,7 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
     }
 
     @Override
-    public TelegramResponseDTO handleShareConversationRequestAndReturnResponse(
+    public TelegramMessageResponseDTO handleShareConversationRequestAndReturnResponse(
             ConversationDTO conversationDTO, ChatMessageDTO chatMessageDTO) {
 
         emailService.handleShareConversationRequest(
@@ -92,13 +92,13 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
                 .message(content)
                 .role(role)
                 .updateId(chatMessageDTO.getUpdateId())
-                .userId(chatMessageDTO.getUserId())
+                .username(chatMessageDTO.getUsername())
                 .build();
     }
 
     @Override
-    public TelegramResponseDTO createTelegramResponse(Long chatId,
-                                                      String content) {
+    public TelegramMessageResponseDTO createTelegramResponse(Long chatId,
+                                                             String content) {
         return telegramResponseDTOMapper.mapToDTO(chatId, content);
     }
 }
