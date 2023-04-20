@@ -12,12 +12,11 @@ public interface ChatRepository extends JpaRepository<ChatMessageEntity, Long> {
 
     @Query("SELECT m" +
             " FROM ChatMessageEntity m " +
-            "WHERE m.chatId = :chatId " +
+            "WHERE m.user.userId = :userId " +
             "AND m.sentDate >= :startingDate")
-    ArrayList<ChatMessageEntity> findMessagesByChatIdAndDate(
-            @Param("chatId") Long chatId,
+    ArrayList<ChatMessageEntity> findMessagesByUserIdAndDate(
+            @Param("userId") Long userId,
             @Param("startingDate")LocalDate startingDate
     );
 
-    boolean existsChatMessageEntityByChatId(Long chatId);
 }

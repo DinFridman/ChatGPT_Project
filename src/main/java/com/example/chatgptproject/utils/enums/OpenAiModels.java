@@ -2,7 +2,8 @@
 
 
 public enum OpenAiModels {
-    CHAT_COMPLETION("gpt-3.5-turbo"),
+    CHAT_COMPLETION_GPT_3("gpt-3.5-turbo"),
+    CHAT_COMPLETION_GPT_4("gpt-4"),
     TEST_COMPLETION("text-davinci-003");
     private String modelName;
 

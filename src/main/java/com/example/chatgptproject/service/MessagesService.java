@@ -7,5 +7,5 @@ import com.example.chatgptproject.model.AppUserEntity;
 public interface MessagesService {
     void addChatMessage(ChatMessageDTO chatMessageDTO);
     AppUserEntity getAppUserFromChatMessageDTO(ChatMessageDTO chatMessageDTO);
-    ConversationDTO getConversationById(Long chatId);
+    ConversationDTO getConversationByUserId(Long chatId);
 }

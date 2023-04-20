@@ -44,7 +44,7 @@ public class MessagesServiceImpl implements MessagesService {
     @Override
     public AppUserEntity getAppUserFromChatMessageDTO(ChatMessageDTO chatMessageDTO) {
         String username = extractUsernameFromChatMessageDTO(chatMessageDTO);
-        return appUserService.getAppUser(username);
+        return appUserService.getAppUserByUsername(username);
     }
 
     private String extractUsernameFromChatMessageDTO(ChatMessageDTO chatMessageDTO) {
@@ -53,21 +53,27 @@ public class MessagesServiceImpl implements MessagesService {
 
     @Cacheable(value = "conversation", key = "#chatId")
     @Override
-    public ConversationDTO getConversationById(Long chatId) {//TODO: replace with userId
-        ArrayList<ChatMessageEntity> messageEntities = getMessagesArrayFromRepository(chatId);
+    public ConversationDTO getConversationByUserId(Long userId) {
+        ArrayList<ChatMessageEntity> messageEntities = getMessagesArrayFromRepository(userId);
         ArrayList<OpenAIPromptDTO> openAIPromptDTOList =
                 mapMessagesArrayToOpenAIPromptArray(messageEntities);
         return createConversationDTOFromOpenAIPromptArray(openAIPromptDTOList);
     }
 
-    private ArrayList<ChatMessageEntity> getMessagesArrayFromRepository(Long chatId) {
-        LocalDate loggedInDate = getLoggedInDateFromAppUserById(chatId);
+    private ArrayList<ChatMessageEntity> getMessagesArrayFromRepository(Long userId) {
+        AppUserEntity appUser = getAppUserByUserId(userId);
+        LocalDate loggedInDate = getLoggedInDateFromAppUser(appUser);
+
         return chatRepository
-                .findMessagesByChatIdAndDate(chatId, loggedInDate);
+                .findMessagesByUserIdAndDate(userId, loggedInDate);
     }
 
-    private LocalDate getLoggedInDateFromAppUserById(Long chatId) {
-        return appUserService.getAppUser(chatId.toString()).getLoggedInDate();
+    private LocalDate getLoggedInDateFromAppUser(AppUserEntity appUser) {
+        return appUser.getLoggedInDate();
+    }
+
+    private AppUserEntity getAppUserByUserId(Long userId) {
+        return appUserService.getAppUserByUserId(userId);
     }
 
     private ArrayList<OpenAIPromptDTO> mapMessagesArrayToOpenAIPromptArray(

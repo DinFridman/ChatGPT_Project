@@ -54,7 +54,7 @@ public class OpenAIRequestGeneratorServiceImpl implements OpenAIRequestGenerator
     @Override
     public OpenAIRequestDTO createOpenAIRequestDTO(ConversationDTO conversationDTO) {
         return openAIRequestDTOMapper.mapToDTO(
-                OpenAiModels.CHAT_COMPLETION,
+                OpenAiModels.CHAT_COMPLETION_GPT_3,
                 conversationDTO,
                 OPEN_AI_MAX_TOKENS,
                 OPEN_AI_TEMPERATURE);

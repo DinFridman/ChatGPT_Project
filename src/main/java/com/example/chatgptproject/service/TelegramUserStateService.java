@@ -4,11 +4,9 @@ import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.TelegramResponse;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
 import com.example.chatgptproject.security.dto.LoginUserDTO;
-import com.example.chatgptproject.security.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,11 +28,15 @@ public class TelegramUserStateService {
         return getTelegramResponseDTO(chatId,"Please enter your username.");
     }
 
+    public Boolean checkIfRegisterRequest(Long chatId) {
+        return getLoginUserDTOFromUsersMap(chatId).getIsRegisterRequest();
+    }
+
     public Boolean checkIfUserLoggedIn(Long chatId) {
         return getLoginUserDTOFromUsersMap(chatId).getIsLoggedIn();
     }
 
-    public LoginUserDTO getLoginUserDTOFromUsersMap(Long chatId) {
+    public LoginUserDTO getLoginUserDTOFromUsersMap(Long chatId) {//TODO: handle null case
         return usersMap.get(chatId);
     }
 
@@ -115,7 +117,6 @@ public class TelegramUserStateService {
         LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
         turnOnUserLoggedInMode(loginUserDTO);
         turnOffUserLoginMode(loginUserDTO);
-        resetUsernameAndPasswordToUserLoginDTO(chatId);
     }
 
     private void turnOnUserLoggedInMode(LoginUserDTO loginUserDTO) {
@@ -126,6 +127,46 @@ public class TelegramUserStateService {
         loginUserDTO.setIsLoginRequest(false);
     }
 
+    public void handleStartingChatState(Long chatId) {
+        createNewSessionForUser(chatId);
+    }
+
+    public Boolean checkIfUserHasSession(Long chatId) {
+        return usersMap.containsKey(chatId);
+    }
+
+    public void createNewSessionForUser(Long chatId) {
+        LoginUserDTO loginUserDTO = createNewLoginUserDTO();
+
+        addUserToUsersMap(loginUserDTO,chatId);
+
+        log.info("New session created for user : {}", loginUserDTO.getUsername());
+        log.debug("loginUserDTO : {}",loginUserDTO);
+    }
+
+    private LoginUserDTO createNewLoginUserDTO() {
+        return new LoginUserDTO();
+    }
+
+    public void handleLogoutRequest(Long chatId) {
+        startLogoutState(chatId);
+    }
+
+    private void startLogoutState(Long chatId) {
+        turnOffLoggedInMode(chatId);
+    }
+
+    private void turnOffLoggedInMode(Long chatId) {
+        getLoginUserDTOFromUsersMap(chatId).setIsLoggedIn(false);
+    }
+
+    public Boolean checkIfLoginRequest(Long chatId) {
+        return (getLoginUserDTOFromUsersMap(chatId).getIsLoginRequest());
+    }
+
+    public String getUsernameFromMapByChatId(Long chatId) {
+        return getLoginUserDTOFromUsersMap(chatId).getUsername();
+    }
 
 
 }

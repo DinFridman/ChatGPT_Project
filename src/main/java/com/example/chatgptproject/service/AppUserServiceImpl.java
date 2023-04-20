@@ -23,11 +23,21 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Cacheable(value = "appUsers", key = "#username")
     @Override
-    public AppUserEntity getAppUser(String username) {
+    public AppUserEntity getAppUserByUsername(String username) {
         Optional<AppUserEntity> user =
-                appUserRepository.findAppUserByUsername(username);
+                appUserRepository.findAppUserEntityByUsername(username);
         if(user.isEmpty())
-            throw new UsernameNotFoundException("Username not found!");
+            throw new UsernameNotFoundException("Username is not found!");
+        return user.get();
+    }
+
+    @Cacheable(value = "appUsers", key = "#userId")//TODO: could make problems
+    @Override
+    public AppUserEntity getAppUserByUserId(Long userId) {
+        Optional<AppUserEntity> user =
+                appUserRepository.findAppUserEntityByUserId(userId);
+        if(user.isEmpty())
+            throw new UsernameNotFoundException("Username is not found!");
         return user.get();
     }
 
@@ -45,7 +55,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @CachePut(value = "appUsers", key = "#username")
     public void updateAppUserLoggedInDate(String username) {
-        AppUserEntity appUser = getAppUser(username);
+        AppUserEntity appUser = getAppUserByUsername(username);
         appUser.setLoggedInDate(LocalDate.now());
         appUserRepository.save(appUser);
 
@@ -54,6 +64,6 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     public boolean checkIfAppUserExists(String username) {
-        return appUserRepository.existsAppUserByUsername(username);
+        return appUserRepository.existsAppUserEntityByUsername(username);
     }
 }

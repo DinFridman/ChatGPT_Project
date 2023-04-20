@@ -25,8 +25,10 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
     @Transactional
     public TelegramMessageResponseDTO handleTelegramRequest(ChatMessageDTO chatMessageDTO)
             throws IOException, InterruptedException {
+        Long userId = getUserIdFromChatMessage(chatMessageDTO);
         addUserMessageToConversation(chatMessageDTO);
-        ConversationDTO conversationDTO = getCurrentConversation(chatMessageDTO.getChatId());
+
+        ConversationDTO conversationDTO = getCurrentConversation(userId);
 
         if(isShareConversationRequest(chatMessageDTO))
             return handleShareConversationRequestAndReturnResponse(
@@ -44,6 +46,10 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
     @Override
     public void addUserMessageToConversation(ChatMessageDTO chatMessageDTO) {
         messagesServiceImpl.addChatMessage(chatMessageDTO);
+    }
+
+    private Long getUserIdFromChatMessage(ChatMessageDTO chatMessageDTO) {
+        return messagesServiceImpl.getAppUserFromChatMessageDTO(chatMessageDTO).getUserId();
     }
 
     @Override
@@ -64,8 +70,8 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
 
     @Override
     @Cacheable("conversation")
-    public ConversationDTO getCurrentConversation(Long chatId) {
-        return messagesServiceImpl.getConversationById(chatId);
+    public ConversationDTO getCurrentConversation(Long userId) {
+        return messagesServiceImpl.getConversationByUserId(userId);
     }
 
     @Override

@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface AppUserRepository extends JpaRepository<AppUserEntity,Long> {
-    Optional<AppUserEntity> findAppUserByUsername(String username);
-    boolean existsAppUserByUsername(String username);
+    Optional<AppUserEntity> findAppUserEntityByUserId(Long userId);
+    boolean existsAppUserEntityByUserId(Long userId);
+    Optional<AppUserEntity> findAppUserEntityByUsername(String username);
+    boolean existsAppUserEntityByUsername(String username);
 }

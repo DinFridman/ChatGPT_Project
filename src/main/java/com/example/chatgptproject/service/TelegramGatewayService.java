@@ -23,7 +23,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Log4j2
 public class TelegramGatewayService {
-    private final AuthService authService;
     private final TelegramRegistrationService telegramRegistrationService;
     private final TelegramResponseDTOMapper telegramResponseDTOMapper;
     private final TelegramRequestServiceImpl telegramRequestServiceImpl;
@@ -72,10 +71,6 @@ public class TelegramGatewayService {
         return (message != null && !message.isEmpty());
     }
 
-    private LoginUserDTO getLoginUserDTOFromUsersMap(Long chatId) {
-        return usersMap.get(chatId);
-    }
-
     private Boolean checkIfLoginButtonPressed(String message) {
         return message.equals("Login");
     }
@@ -106,46 +101,30 @@ public class TelegramGatewayService {
     }
 
     private TelegramResponse handleLogoutRequest(Long chatId) {
-        startLogoutState(chatId);
+        telegramUserStateService.handleLogoutRequest(chatId);
+
         return createTelegramLoginRegisterKeyboardResponse(chatId,
                 "Logged out successfully.");
     }
 
-    private void startLogoutState(Long chatId) {
-        turnOffLoggedInMode(chatId);
-    }
-
-    private void turnOffLoggedInMode(Long chatId) {
-        getLoginUserDTOFromUsersMap(chatId).setIsLoggedIn(false);
-    }
-
     private Boolean isLoginRequest(Long chatId) {
-        return (getLoginUserDTOFromUsersMap(chatId).getIsLoginRequest());
+        return telegramUserStateService.checkIfLoginRequest(chatId);
     }
 
     private Boolean isRegisterRequest(Long chatId) {
-        return getLoginUserDTOFromUsersMap(chatId).getIsRegisterRequest();
+        return telegramUserStateService.checkIfRegisterRequest(chatId);
     }
 
     private Boolean userIsLoggedIn(Long chatId) {
-        return getLoginUserDTOFromUsersMap(chatId).getIsLoggedIn();
+        return telegramUserStateService.checkIfUserLoggedIn(chatId);
     }
 
     private Boolean checkIfUserHasSession(Long chatId) {
-        return usersMap.containsKey(chatId);
-    }
-
-    private void createNewSessionForUser(Long chatId) {
-        LoginUserDTO loginUserDTO = createLoginUserDTO();
-
-        addUserToUsersMap(loginUserDTO,chatId);
-
-        log.info("New session created for user : {}", loginUserDTO.getUsername());
-        log.debug("loginUserDTO : {}",loginUserDTO);
+        return telegramUserStateService.checkIfUserHasSession(chatId);
     }
 
     private TelegramResponse handleStartingChatState(Long chatId) {
-        createNewSessionForUser(chatId);
+        telegramUserStateService.handleStartingChatState(chatId);
 
         return createTelegramLoginRegisterKeyboardResponse(chatId,
                 "Please login or register.");
@@ -168,41 +147,29 @@ public class TelegramGatewayService {
     public TelegramResponse handleGenerateAnswerState(Update update)
             throws IOException, InterruptedException {
         Long chatId = getChatIdFromUpdate(update);
-        String username = getUsernameFromLoginUserMap(chatId);
-        ChatMessageDTO chatMessageDTO = new ChatMessageDTOMapper().mapToDTO(update, username);
-        TelegramMessageResponseDTO telegramResponse = telegramRequestServiceImpl
+        String username = telegramUserStateService.getUsernameFromMapByChatId(chatId);
+
+        ChatMessageDTO chatMessageDTO = createChatMessageDTO(update,username);
+
+        TelegramMessageResponseDTO openAIResponse = telegramRequestServiceImpl
                 .handleTelegramRequest(chatMessageDTO);
-        String responseMessage = telegramResponse.getText();
+
+        String responseMessage = ExtractMessageFromResponse(openAIResponse);
 
         return telegramKeyboardService.createTelegramResponseWithChatMainKeyboard(
                 chatMessageDTO.getChatId(),responseMessage);
     }
 
-    private String getUsernameFromLoginUserMap(Long chatId) {
-       return getLoginUserDTOFromUsersMap(chatId).getUsername();
+    private ChatMessageDTO createChatMessageDTO(Update update, String username) {
+        return new ChatMessageDTOMapper().mapToDTO(update, username);
+    }
+
+    private String ExtractMessageFromResponse(TelegramMessageResponseDTO telegramMessageResponseDTO) {
+        return telegramMessageResponseDTO.getText();
     }
 
     private Long getChatIdFromUpdate(Update update) {
         return update.getMessage().getChatId();
-    }
-
-    private String extractMetadataFromLoginMessage(String message, String subString) {
-        return message.substring(subString.length()).trim();
-    }
-
-    private void addUserToUsersMap(LoginUserDTO loginUserDTO, Long chatId) {
-        usersMap.put(chatId,loginUserDTO);
-    }
-
-    private LoginUserDTO createLoginUserDTO() {
-        return new LoginUserDTO();
-    }
-
-    public TelegramResponse performLogout(Long chatId) {
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        loginUserDTO.setIsLoggedIn(false);
-
-        return createTelegramLoginRegisterKeyboardResponse(chatId, "user logged out successfully!");
     }
 
     public TelegramMessageResponseDTO getTelegramResponseDTO(Long chatId, String message) {
