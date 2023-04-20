@@ -5,7 +5,4 @@ import com.example.chatgptproject.dto.EmailDetailsDTO;
 
 public interface EmailService {
     void handleShareConversationRequest(ConversationDTO conversationDTO, String messageBody);
-    void sendMailWithAttachment(EmailDetailsDTO details);
-    String getRecipientFromShareConversationRequest(String messageBody);
-    void sendSimpleMail(EmailDetailsDTO details);
 }

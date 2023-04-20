@@ -40,7 +40,7 @@ public class MessagesServiceImpl implements MessagesService {
         log.debug("---------------ChatMessage added: " + chatMessageDTO + "---------------");
     }
 
-    @Cacheable(value = "appUsers", key = "#chatMessageDTO.userId")
+    @Cacheable(value = "appUsers", key = "#chatMessageDTO.username")
     @Override
     public AppUserEntity getAppUserFromChatMessageDTO(ChatMessageDTO chatMessageDTO) {
         String username = extractUsernameFromChatMessageDTO(chatMessageDTO);
@@ -51,7 +51,7 @@ public class MessagesServiceImpl implements MessagesService {
         return chatMessageDTO.getUsername();
     }
 
-    @Cacheable(value = "conversation", key = "#chatId")
+    @Cacheable(value = "conversation", key = "#userId")
     @Override
     public ConversationDTO getConversationByUserId(Long userId) {
         ArrayList<ChatMessageEntity> messageEntities = getMessagesArrayFromRepository(userId);

@@ -3,16 +3,13 @@ package com.example.chatgptproject.configuration;
 import com.example.chatgptproject.dto.mapper.*;
 import com.example.chatgptproject.dto.EmailDetailsDTO;
 import com.example.chatgptproject.model.mapper.ChatMessageMapper;
-import com.example.chatgptproject.security.dto.LoginUserDTOMapper;
+import com.example.chatgptproject.dto.mapper.LoginUserDTOMapper;
 import com.example.chatgptproject.security.dto.RegisterDTOMapper;
-import com.example.chatgptproject.service.TelegramKeyboardService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration("applicationConfig")
@@ -21,7 +18,6 @@ public class ApplicationConfig {
     private String redisHostName;
     @Value("${redis.port}")
     private int redisPort;
-
 
     @Bean
     public ChatMessageDTOMapper telegramRequestDTOMapper() {return new ChatMessageDTOMapper();}

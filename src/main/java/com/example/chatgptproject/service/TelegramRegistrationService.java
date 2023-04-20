@@ -3,7 +3,7 @@ package com.example.chatgptproject.service;
 import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.TelegramResponse;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
-import com.example.chatgptproject.security.dto.LoginUserDTO;
+import com.example.chatgptproject.dto.LoginUserDTO;
 import com.example.chatgptproject.security.dto.RegisterDTOMapper;
 import com.example.chatgptproject.security.service.AuthService;
 import lombok.RequiredArgsConstructor;

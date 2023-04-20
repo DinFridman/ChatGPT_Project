@@ -14,5 +14,5 @@ public class Constants {
     public static final String EMAIL_SUBJECT = "Your conversation with ChatGPT";
     public static final String SHARE_CONVERSATION_BY_EMAIL_REQUEST = "/sendConversation";
     public static final String SHARE_CONVERSATION_BY_EMAIL_RESPONSE =
-            "Sure! Your conversation is waiting for you in your inbox.";
+            "Your conversation is waiting for you in your inbox.";
 }

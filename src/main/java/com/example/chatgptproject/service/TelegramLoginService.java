@@ -3,7 +3,7 @@ package com.example.chatgptproject.service;
 import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.TelegramResponse;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
-import com.example.chatgptproject.security.dto.LoginUserDTO;
+import com.example.chatgptproject.dto.LoginUserDTO;
 import com.example.chatgptproject.security.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,7 +21,7 @@ public class TelegramLoginService {
 
 
     public TelegramResponse handleLoginState(Long chatId, String message) {
-        if(IsUsernameInputState(chatId))
+        if(isUsernameInputState(chatId))
             return handleUsernameInput(chatId,message);
 
         handlePasswordInput(chatId,message);
@@ -31,7 +31,7 @@ public class TelegramLoginService {
                 "\nYou are now connected to ChatGPT.");
     }
 
-    private Boolean IsUsernameInputState(Long chatId) {
+    private Boolean isUsernameInputState(Long chatId) {
         return !telegramUserStateService.checkIfUsernameHasBeenSet(chatId);
     }
 
@@ -61,7 +61,8 @@ public class TelegramLoginService {
         telegramUserStateService.setPasswordToLoginUserDTO(password,chatId);
     }
 
-    private void loginUser(Long chatId) {
+    @Transactional
+    public void loginUser(Long chatId) {
         LoginUserDTO loginUserDTO = telegramUserStateService.getLoginUserDTOFromUsersMap(chatId);
         authService.loginUser(loginUserDTO);
 

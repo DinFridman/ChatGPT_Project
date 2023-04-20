@@ -3,7 +3,7 @@ package com.example.chatgptproject.service;
 import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.TelegramResponse;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
-import com.example.chatgptproject.security.dto.LoginUserDTO;
+import com.example.chatgptproject.dto.LoginUserDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -99,13 +99,14 @@ public class TelegramUserStateService {
     }
 
     public void turnOffRegistrationState(Long chatId) {
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        turnOffUserRegistrationMode(loginUserDTO);
+        turnOffUserRegistrationMode(chatId);
         resetUsernameAndPasswordToUserLoginDTO(chatId);
     }
 
-    private void turnOffUserRegistrationMode(LoginUserDTO loginUserDTO) {
+    private void turnOffUserRegistrationMode(Long chatId) {
+        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
         loginUserDTO.setIsRegisterRequest(false);
+        addUserToUsersMap(loginUserDTO,chatId);
     }
 
     private void resetUsernameAndPasswordToUserLoginDTO(Long chatId) {
@@ -115,15 +116,15 @@ public class TelegramUserStateService {
 
     public void turnOffLogInState(Long chatId) {
         LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        turnOnUserLoggedInMode(loginUserDTO);
-        turnOffUserLoginMode(loginUserDTO);
+        turnOnUserLoggedInState(loginUserDTO);
+        turnOffUserLoginState(loginUserDTO);
     }
 
-    private void turnOnUserLoggedInMode(LoginUserDTO loginUserDTO) {
+    private void turnOnUserLoggedInState(LoginUserDTO loginUserDTO) {
         loginUserDTO.setIsLoggedIn(true);
     }
 
-    private void turnOffUserLoginMode(LoginUserDTO loginUserDTO) {
+    private void turnOffUserLoginState(LoginUserDTO loginUserDTO) {
         loginUserDTO.setIsLoginRequest(false);
     }
 
@@ -167,6 +168,31 @@ public class TelegramUserStateService {
     public String getUsernameFromMapByChatId(Long chatId) {
         return getLoginUserDTOFromUsersMap(chatId).getUsername();
     }
+
+    public TelegramResponse startSendConversationState(Long chatId) {
+
+        turnOnEmailConversationState(chatId);
+
+        return getTelegramResponseDTO(chatId,"Please provide an email to send your conversation.");
+    }
+
+    public Boolean checkIfEmailConversationStateOn(Long chatId) {
+        return getLoginUserDTOFromUsersMap(chatId).getIsEmailConversationRequest();
+    }
+
+    public void turnOnEmailConversationState(Long chatId) {
+        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
+        loginUserDTO.setIsEmailConversationRequest(true);
+        addUserToUsersMap(loginUserDTO,chatId);
+    }
+
+    public void turnOffEmailConversationState(Long chatId) {
+        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
+        loginUserDTO.setIsEmailConversationRequest(false);
+        addUserToUsersMap(loginUserDTO,chatId);
+    }
+
+
 
 
 }

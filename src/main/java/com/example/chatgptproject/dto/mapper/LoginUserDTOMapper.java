@@ -1,5 +1,7 @@
-package com.example.chatgptproject.security.dto;
+package com.example.chatgptproject.dto.mapper;
 
+
+import com.example.chatgptproject.dto.LoginUserDTO;
 
 public class LoginUserDTOMapper {
     public LoginUserDTO mapToDTO(String username) {

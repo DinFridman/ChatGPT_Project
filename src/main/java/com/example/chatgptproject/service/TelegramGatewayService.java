@@ -5,19 +5,12 @@ import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.TelegramResponse;
 import com.example.chatgptproject.dto.mapper.ChatMessageDTOMapper;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
-import com.example.chatgptproject.security.dto.LoginUserDTO;
-import com.example.chatgptproject.security.dto.RegisterDTOMapper;
-import com.example.chatgptproject.security.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -26,15 +19,16 @@ public class TelegramGatewayService {
     private final TelegramRegistrationService telegramRegistrationService;
     private final TelegramResponseDTOMapper telegramResponseDTOMapper;
     private final TelegramRequestServiceImpl telegramRequestServiceImpl;
-    private final Map<Long,LoginUserDTO> usersMap = new HashMap<>();
     private final TelegramKeyboardService telegramKeyboardService;
     private final TelegramUserStateService telegramUserStateService;
     private final TelegramLoginService telegramLoginService;
+    private final ConversationSenderService conversationSenderService;
 
     public TelegramResponse telegramRequestsGateway(@NotNull Update update)
             throws IOException, InterruptedException {
         String message = update.getMessage().getText();
         Long chatId = update.getMessage().getChatId();
+
 
         if (!messageIsNotEmptyOrNull(message))
             return getTelegramResponseDTO(chatId, "no message!");
@@ -60,11 +54,13 @@ public class TelegramGatewayService {
         if(!userIsLoggedIn(chatId))
             return handleStartingChatState(chatId);
 
-        //if(checkIfSendConversationRequest(message))
-            //return handleSendConversationRequest(chatId);
+        if(checkIfSendConversationButtonPressed(message))
+            return startSendConversationState(chatId);
 
-        else
-            return handleGenerateAnswerState(update);
+        if(isSendConversationRequest(chatId))
+            return handleSendConversationRequest(update);
+
+        return handleGenerateAnswerState(update);
     }
 
     private Boolean messageIsNotEmptyOrNull(String message) {
@@ -92,12 +88,23 @@ public class TelegramGatewayService {
         return message.equals("Logout");
     }
 
-    private Boolean checkIfSendConversationRequest(String message) {
-        return message.equals("Send conversation");
+    private Boolean checkIfSendConversationButtonPressed(String message) {
+        return message.equals("Email conversation");
     }
 
-    private void handleSendConversationRequest(Long chatId) {
+    private TelegramResponse startSendConversationState(Long chatId) {
+        return telegramUserStateService.startSendConversationState(chatId);
+    }
 
+    private Boolean isSendConversationRequest(Long chatId) {
+        return telegramUserStateService.checkIfEmailConversationStateOn(chatId);
+    }
+
+    private TelegramResponse handleSendConversationRequest(Update update) {
+        Long chatId = getChatIdFromUpdate(update);
+        ChatMessageDTO chatMessageDTO = createChatMessageDTO(update);
+        String emailResponse = conversationSenderService.handleSendConversationRequest(chatMessageDTO);
+        return createTelegramLoginRegisterKeyboardResponse(chatId, emailResponse);
     }
 
     private TelegramResponse handleLogoutRequest(Long chatId) {
@@ -146,10 +153,8 @@ public class TelegramGatewayService {
 
     public TelegramResponse handleGenerateAnswerState(Update update)
             throws IOException, InterruptedException {
-        Long chatId = getChatIdFromUpdate(update);
-        String username = telegramUserStateService.getUsernameFromMapByChatId(chatId);
 
-        ChatMessageDTO chatMessageDTO = createChatMessageDTO(update,username);
+        ChatMessageDTO chatMessageDTO = createChatMessageDTO(update);
 
         TelegramMessageResponseDTO openAIResponse = telegramRequestServiceImpl
                 .handleTelegramRequest(chatMessageDTO);
@@ -160,7 +165,9 @@ public class TelegramGatewayService {
                 chatMessageDTO.getChatId(),responseMessage);
     }
 
-    private ChatMessageDTO createChatMessageDTO(Update update, String username) {
+    private ChatMessageDTO createChatMessageDTO(Update update) {
+        Long chatId = getChatIdFromUpdate(update);
+        String username = telegramUserStateService.getUsernameFromMapByChatId(chatId);
         return new ChatMessageDTOMapper().mapToDTO(update, username);
     }
 

@@ -25,26 +25,27 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
     @Transactional
     public TelegramMessageResponseDTO handleTelegramRequest(ChatMessageDTO chatMessageDTO)
             throws IOException, InterruptedException {
-        Long userId = getUserIdFromChatMessage(chatMessageDTO);
-        addUserMessageToConversation(chatMessageDTO);
+        Long chatId = chatMessageDTO.getChatId();
+        addChatMessageToConversation(chatMessageDTO);
 
-        ConversationDTO conversationDTO = getCurrentConversation(userId);
-
-        if(isShareConversationRequest(chatMessageDTO))
-            return handleShareConversationRequestAndReturnResponse(
-                    conversationDTO,chatMessageDTO);
+        ConversationDTO conversationDTO = getCurrentConversation(chatMessageDTO);
+       /* if(isShareConversationRequest(chatMessageDTO)) { //TODO: should be an endpoint in the API
+            handleShareConversationRequest(chatMessageDTO,);
+            return createTelegramResponse(chatId, Constants.SHARE_CONVERSATION_BY_EMAIL_RESPONSE);
+        }*/
 
         OpenAIPromptDTO openAIPromptDTO = generateAnswerByRequestHandler(conversationDTO);
 
         log.info("----------AI_Answer  : " + openAIPromptDTO  + "----------");
 
-        addOpenAIMessageToConversation(chatMessageDTO,openAIPromptDTO);
+        createChatMessageDTOForOpenAIResponse(chatMessageDTO,openAIPromptDTO);
+        addChatMessageToConversation(chatMessageDTO);
 
-        return  createTelegramResponse(chatMessageDTO.getChatId(),openAIPromptDTO.content());
+        return createTelegramResponse(chatId,openAIPromptDTO.content());
     }
 
     @Override
-    public void addUserMessageToConversation(ChatMessageDTO chatMessageDTO) {
+    public void addChatMessageToConversation(ChatMessageDTO chatMessageDTO) {
         messagesServiceImpl.addChatMessage(chatMessageDTO);
     }
 
@@ -53,13 +54,11 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
     }
 
     @Override
-    public TelegramMessageResponseDTO handleShareConversationRequestAndReturnResponse(
-            ConversationDTO conversationDTO, ChatMessageDTO chatMessageDTO) {
-
+    public void handleShareConversationRequest(
+            ChatMessageDTO chatMessageDTO, String recipient) {
+        ConversationDTO conversationDTO = getCurrentConversation(chatMessageDTO);
         emailService.handleShareConversationRequest(
-                conversationDTO, chatMessageDTO.getMessage());
-        String answer = Constants.SHARE_CONVERSATION_BY_EMAIL_RESPONSE;
-        return createTelegramResponse(chatMessageDTO.getChatId(),answer);
+                conversationDTO, recipient);
     }
 
     @Override
@@ -70,7 +69,8 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
 
     @Override
     @Cacheable("conversation")
-    public ConversationDTO getCurrentConversation(Long userId) {
+    public ConversationDTO getCurrentConversation(ChatMessageDTO chatMessageDTO) {
+        Long userId = getUserIdFromChatMessage(chatMessageDTO);
         return messagesServiceImpl.getConversationByUserId(userId);
     }
 
@@ -81,12 +81,12 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
     }
 
     @Override
-    public void addOpenAIMessageToConversation(ChatMessageDTO chatMessageDTO,
-                                               OpenAIPromptDTO openAIPromptDTO) {
-
-        messagesServiceImpl.addChatMessage(
-                createChatMessageDTO(
-                        chatMessageDTO,openAIPromptDTO.role(),openAIPromptDTO.content()));
+    public ChatMessageDTO createChatMessageDTOForOpenAIResponse(ChatMessageDTO chatMessageDTO,
+                                                      OpenAIPromptDTO openAIPromptDTO) {
+        return createChatMessageDTO(
+                chatMessageDTO,
+                openAIPromptDTO.role(),
+                openAIPromptDTO.content());
     }
 
     @Override

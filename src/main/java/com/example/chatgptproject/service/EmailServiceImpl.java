@@ -28,21 +28,13 @@ public class EmailServiceImpl implements EmailService{
 
     @Override
     public void handleShareConversationRequest(ConversationDTO conversationDTO,
-                                               String messageBody)
+                                               String recipient)
     {
-        String recipient = getRecipientFromShareConversationRequest(messageBody);
         EmailDetailsDTO details = emailDetailsDTOMapper.mapToDTO(conversationDTO, recipient);
         sendSimpleMail(details);
     }
 
-    @Override
-    public String getRecipientFromShareConversationRequest(String messageBody) {
-        return messageBody.substring(
-                SHARE_CONVERSATION_BY_EMAIL_REQUEST.length()).trim();
-    }
-
-    @Override
-    public void sendSimpleMail(EmailDetailsDTO details) {
+    private void sendSimpleMail(EmailDetailsDTO details) {
         try {
             log.debug("Email details: " + details);
 
@@ -59,8 +51,7 @@ public class EmailServiceImpl implements EmailService{
         }
     }
 
-    @Override
-    public void sendMailWithAttachment(EmailDetailsDTO details)
+    private void sendMailWithAttachment(EmailDetailsDTO details)
     {
         try {
             MimeMessage mimeMessage

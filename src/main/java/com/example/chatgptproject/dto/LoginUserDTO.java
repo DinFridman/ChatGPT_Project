@@ -1,4 +1,4 @@
-package com.example.chatgptproject.security.dto;
+package com.example.chatgptproject.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,4 +16,5 @@ public class LoginUserDTO {
     private Boolean isLoggedIn = false;
     private Boolean isRegisterRequest = false;
     private Boolean isLoginRequest = false;
+    private Boolean isEmailConversationRequest = false;
 }

@@ -1,7 +1,6 @@
 package com.example.chatgptproject.controller;
 
-import com.example.chatgptproject.bot.TelegramBot;
-import com.example.chatgptproject.security.dto.LoginUserDTO;
+import com.example.chatgptproject.dto.LoginUserDTO;
 import com.example.chatgptproject.security.payload.request.AuthRequest;
 import com.example.chatgptproject.security.dto.RegisterDTO;
 import com.example.chatgptproject.security.payload.request.RegisterRequest;

@@ -88,7 +88,7 @@ public class TelegramKeyboardService {
     private ReplyKeyboardMarkup createLoginRegisterKeyboard() {
         List<KeyboardButton> keyboardButtonList = createLoginAndRegisterButtonList();
 
-        return createKeyboard(keyboardButtonList, false);
+        return createKeyboard(keyboardButtonList, true);
     }
 
     private List<KeyboardButton> createLoginAndRegisterButtonList() {
