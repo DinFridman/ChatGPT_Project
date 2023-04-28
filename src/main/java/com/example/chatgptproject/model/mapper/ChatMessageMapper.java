@@ -6,6 +6,7 @@ import com.example.chatgptproject.model.ChatMessageEntity;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 public class ChatMessageMapper {
@@ -15,6 +16,6 @@ public class ChatMessageMapper {
                 chatMessageDTO.getMessage(),
                 chatMessageDTO.getRole(),
                 user,
-                LocalDate.now());
+                LocalDateTime.now());
     }
 }

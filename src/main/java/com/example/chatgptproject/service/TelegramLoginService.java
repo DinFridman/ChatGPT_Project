@@ -27,7 +27,8 @@ public class TelegramLoginService {
         handlePasswordInput(chatId,message);
         loginUser(chatId);
 
-        return getTelegramResponseDTO(chatId,"User logged in successfully. " +
+        return createTelegramResponseWithMainChatKeyboard(chatId,
+                "User logged in successfully. " +
                 "\nYou are now connected to ChatGPT.");
     }
 
@@ -37,8 +38,8 @@ public class TelegramLoginService {
 
     @Transactional
     public TelegramResponse handleUsernameInput(Long chatId, String username) {
-        if (!checkIfUserExists(username))
-            return telegramKeyboardService.createTelegramResponseWithLoginRegisterKeyboard(
+        if (checkIfUsernameNotExists(username))
+            return createTelegramResponseWithLoginRegisterKeyboard(
                     chatId, "Username does not exists!\n" +
                             "Please try again.");
 
@@ -46,11 +47,20 @@ public class TelegramLoginService {
 
         return getTelegramResponseDTO(chatId,
                 "Username entered successfully.\n" +
-                        "Please enter your password");
+                        "Please enter your password.");
     }
 
-    private Boolean checkIfUserExists(String username) {
-        return authService.checkIfAppUserExists(username);
+    private Boolean checkIfUsernameNotExists(String username) {
+        return !authService.checkIfAppUserExists(username);
+    }
+
+    private TelegramResponse createTelegramResponseWithMainChatKeyboard(Long chatId, String text) {
+        return telegramKeyboardService.createTelegramResponseWithChatMainKeyboard(chatId,text);
+    }
+
+    private TelegramResponse createTelegramResponseWithLoginRegisterKeyboard(
+            Long chatId, String text) {
+        return telegramKeyboardService.createTelegramResponseWithLoginRegisterKeyboard(chatId,text);
     }
 
     private TelegramMessageResponseDTO getTelegramResponseDTO(Long chatId, String message) {

@@ -4,9 +4,9 @@ package com.example.chatgptproject.dto.mapper;
 import com.example.chatgptproject.dto.LoginUserDTO;
 
 public class LoginUserDTOMapper {
-    public LoginUserDTO mapToDTO(String username) {
+    public LoginUserDTO mapToDTO(Long chatId) {
         LoginUserDTO loginUserDTO = new LoginUserDTO();
-        loginUserDTO.setUsername(username);
+        loginUserDTO.setChatId(chatId);
         return loginUserDTO;
     }
 }

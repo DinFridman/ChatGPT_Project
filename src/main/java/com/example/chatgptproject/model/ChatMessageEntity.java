@@ -1,6 +1,11 @@
 package com.example.chatgptproject.model;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +14,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -64,8 +70,10 @@ public class ChatMessageEntity {
     @Column(
             name = "sent_date"
     )
-    @Temporal(TemporalType.DATE)
-    private LocalDate sentDate;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
+    private LocalDateTime sentDate;
 
 
     public ChatMessageEntity(Long updateId,
@@ -73,7 +81,7 @@ public class ChatMessageEntity {
                              String message,
                              String conversationRole,
                              AppUserEntity user,
-                             LocalDate sentDate) {
+                             LocalDateTime sentDate) {
         this.updateId = updateId;
         this.chatId = chatId;
         this.message = message;

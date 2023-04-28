@@ -38,8 +38,9 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
 
         log.info("----------AI_Answer  : " + openAIPromptDTO  + "----------");
 
-        createChatMessageDTOForOpenAIResponse(chatMessageDTO,openAIPromptDTO);
-        addChatMessageToConversation(chatMessageDTO);
+        ChatMessageDTO openAIChatMessageDTO =
+                createChatMessageDTOForOpenAIResponse(chatMessageDTO,openAIPromptDTO);
+        addChatMessageToConversation(openAIChatMessageDTO);
 
         return createTelegramResponse(chatId,openAIPromptDTO.content());
     }
@@ -68,7 +69,6 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
     }
 
     @Override
-    @Cacheable("conversation")
     public ConversationDTO getCurrentConversation(ChatMessageDTO chatMessageDTO) {
         Long userId = getUserIdFromChatMessage(chatMessageDTO);
         return messagesServiceImpl.getConversationByUserId(userId);

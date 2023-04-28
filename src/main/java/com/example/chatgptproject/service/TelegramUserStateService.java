@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
+import static com.example.chatgptproject.utils.Constants.UNINITIALIZED_VALUE;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ import java.util.Map;
 public class TelegramUserStateService {
     private final Map<Long,LoginUserDTO> usersMap = new HashMap<>();
     private final TelegramResponseDTOMapper telegramResponseDTOMapper;
+
 
 
     public TelegramResponse startRegisterState(Long chatId) {
@@ -51,10 +53,14 @@ public class TelegramUserStateService {
 
     private void turnOnRegisterModeInLoginUser(Long chatId) {
         LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        loginUserDTO.setIsRegisterRequest(true);
+        setIsRegisterRequestOn(loginUserDTO);
         addUserToUsersMap(loginUserDTO,chatId);
 
         log.info("user : {} is on register request mode.", loginUserDTO.getUsername());
+    }
+
+    private void setIsRegisterRequestOn(LoginUserDTO loginUserDTO) {
+        loginUserDTO.setIsRegisterRequest(true);
     }
 
     public TelegramResponse startLoginState(Long chatId) {
@@ -117,14 +123,14 @@ public class TelegramUserStateService {
     public void turnOffLogInState(Long chatId) {
         LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
         turnOnUserLoggedInState(loginUserDTO);
-        turnOffUserLoginState(loginUserDTO);
+        turnOffUserLoginRequestState(loginUserDTO);
     }
 
     private void turnOnUserLoggedInState(LoginUserDTO loginUserDTO) {
         loginUserDTO.setIsLoggedIn(true);
     }
 
-    private void turnOffUserLoginState(LoginUserDTO loginUserDTO) {
+    private void turnOffUserLoginRequestState(LoginUserDTO loginUserDTO) {
         loginUserDTO.setIsLoginRequest(false);
     }
 
@@ -141,7 +147,9 @@ public class TelegramUserStateService {
 
         addUserToUsersMap(loginUserDTO,chatId);
 
-        log.info("New session created for user : {}", loginUserDTO.getUsername());
+        log.info("-----------------------" +
+                "New session created for user : {}" +
+                "-----------------------", loginUserDTO.getUsername());
         log.debug("loginUserDTO : {}",loginUserDTO);
     }
 
@@ -154,11 +162,7 @@ public class TelegramUserStateService {
     }
 
     private void startLogoutState(Long chatId) {
-        turnOffLoggedInMode(chatId);
-    }
-
-    private void turnOffLoggedInMode(Long chatId) {
-        getLoginUserDTOFromUsersMap(chatId).setIsLoggedIn(false);
+        usersMap.remove(chatId);
     }
 
     public Boolean checkIfLoginRequest(Long chatId) {

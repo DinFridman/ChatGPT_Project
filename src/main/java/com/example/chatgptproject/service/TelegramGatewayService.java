@@ -29,7 +29,6 @@ public class TelegramGatewayService {
         String message = update.getMessage().getText();
         Long chatId = update.getMessage().getChatId();
 
-
         if (!messageIsNotEmptyOrNull(message))
             return getTelegramResponseDTO(chatId, "no message!");
 

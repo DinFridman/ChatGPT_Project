@@ -13,8 +13,6 @@ import static com.example.chatgptproject.utils.Constants.SHARE_CONVERSATION_BY_E
 @RequiredArgsConstructor
 @Service
 public class ConversationSenderService {
-    private final EmailServiceImpl emailService;
-    private final MessagesServiceImpl messagesService;
     private final TelegramRequestServiceImpl telegramRequestServiceImpl;
     private final TelegramUserStateService telegramUserStateService;
 
@@ -45,9 +43,9 @@ public class ConversationSenderService {
         telegramUserStateService.turnOffEmailConversationState(chatId);
     }
 
-    private String getEmailFromUsersMapByChatId(Long chatId) {
+    /*private String getEmailFromUsersMapByChatId(Long chatId) {
         return telegramUserStateService.getLoginUserDTOFromUsersMap(chatId).getEmail();
-    }
+    }*/
 
     private void startEmailConversationState(Long chatId) {
         telegramUserStateService.turnOnEmailConversationState(chatId);

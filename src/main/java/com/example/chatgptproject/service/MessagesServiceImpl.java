@@ -17,6 +17,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -30,8 +31,6 @@ public class MessagesServiceImpl implements MessagesService {
     private final OpenAIPromptDTOMapper openAIPromptDTOMapper;
     private final AppUserServiceImpl appUserService;
 
-    @Caching(evict = {@CacheEvict(value = "allMessages", allEntries = true),
-            @CacheEvict(value = "conversation")})
     @Override
     public void addChatMessage(ChatMessageDTO chatMessageDTO) {
         AppUserEntity user = getAppUserFromChatMessageDTO(chatMessageDTO);
@@ -40,7 +39,6 @@ public class MessagesServiceImpl implements MessagesService {
         log.debug("---------------ChatMessage added: " + chatMessageDTO + "---------------");
     }
 
-    @Cacheable(value = "appUsers", key = "#chatMessageDTO.username")
     @Override
     public AppUserEntity getAppUserFromChatMessageDTO(ChatMessageDTO chatMessageDTO) {
         String username = extractUsernameFromChatMessageDTO(chatMessageDTO);
@@ -51,7 +49,6 @@ public class MessagesServiceImpl implements MessagesService {
         return chatMessageDTO.getUsername();
     }
 
-    @Cacheable(value = "conversation", key = "#userId")
     @Override
     public ConversationDTO getConversationByUserId(Long userId) {
         ArrayList<ChatMessageEntity> messageEntities = getMessagesArrayFromRepository(userId);
@@ -62,13 +59,13 @@ public class MessagesServiceImpl implements MessagesService {
 
     private ArrayList<ChatMessageEntity> getMessagesArrayFromRepository(Long userId) {
         AppUserEntity appUser = getAppUserByUserId(userId);
-        LocalDate loggedInDate = getLoggedInDateFromAppUser(appUser);
+        LocalDateTime loggedInDate = getLoggedInDateFromAppUser(appUser);
 
         return chatRepository
                 .findMessagesByUserIdAndDate(userId, loggedInDate);
     }
 
-    private LocalDate getLoggedInDateFromAppUser(AppUserEntity appUser) {
+    private LocalDateTime getLoggedInDateFromAppUser(AppUserEntity appUser) {
         return appUser.getLoggedInDate();
     }
 

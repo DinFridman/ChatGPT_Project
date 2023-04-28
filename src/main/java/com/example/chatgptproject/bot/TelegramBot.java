@@ -1,10 +1,6 @@
 package com.example.chatgptproject.bot;
 
-import com.example.chatgptproject.dto.ChatMessageDTO;
-import com.example.chatgptproject.dto.TelegramKeyBoardMessageDTO;
-import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.TelegramResponse;
-import com.example.chatgptproject.dto.mapper.ChatMessageDTOMapper;
 import com.example.chatgptproject.service.TelegramGatewayService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,17 +11,11 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.example.chatgptproject.utils.Constants.*;
 
@@ -35,7 +25,6 @@ import static com.example.chatgptproject.utils.Constants.*;
 public class TelegramBot extends TelegramLongPollingBot {
     private final ObjectMapper objectMapper;
     private final TelegramGatewayService telegramGatewayService;
-    private final ChatMessageDTOMapper chatMessageDTOMapper;
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -63,7 +52,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         log.info("telegram Response sent successfully.");
 
         String response = client.send(telegramRequest, HttpResponse.BodyHandlers.ofString()).body();
-        log.info("Telegram Server Response: {}", response);
+        log.info("-----------------------" +
+                "Telegram Server Response: {} " +
+                "-----------------------", response);
     }
 
     public HttpRequest createTelegramHttpRequest(String body) {
