@@ -1,7 +1,7 @@
 package com.example.chatgptproject.utils;
 
 public class Constants {
-    public static final String OPEN_AI_KEY = "";
+    public static final String OPEN_AI_KEY = "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";
     public static final String CHAT_COMPLETION_URL = "https://api.openai.com/v1/chat/completions";
     public static final String TELEGRAM_BOT_NAME = "chatGPT_project_bot";
     public static final String TELEGRAM_URL = "https://api.telegram.org/bot";
@@ -14,6 +14,6 @@ public class Constants {
     public static final String EMAIL_SUBJECT = "Your conversation with ChatGPT";
     public static final String SHARE_CONVERSATION_BY_EMAIL_REQUEST = "/sendConversation";
     public static final String SHARE_CONVERSATION_BY_EMAIL_RESPONSE =
-            "Your conversation is waiting for you in your inbox.";
+            "Conversation sent successfully.";
     public static final String UNINITIALIZED_VALUE = "UNINITIALIZED";
 }

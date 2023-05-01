@@ -166,7 +166,7 @@ public class TelegramGatewayService {
 
     private ChatMessageDTO createChatMessageDTO(Update update) {
         Long chatId = getChatIdFromUpdate(update);
-        String username = telegramUserStateService.getUsernameFromMapByChatId(chatId);
+        String username = telegramUserStateService.getUsernameFromUserSessionByChatId(chatId);
         return new ChatMessageDTOMapper().mapToDTO(update, username);
     }
 

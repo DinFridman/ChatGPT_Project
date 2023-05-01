@@ -1,7 +1,8 @@
 package com.example.chatgptproject.security.service;
 
-import com.example.chatgptproject.model.AppUserEntity;
 import com.example.chatgptproject.dto.LoginUserDTO;
+import com.example.chatgptproject.model.AppUserEntity;
+import com.example.chatgptproject.dto.UserSessionDetails;
 import com.example.chatgptproject.security.dto.RegisterDTO;
 import com.example.chatgptproject.security.jwt.JWTUtils;
 import com.example.chatgptproject.service.AppUserServiceImpl;

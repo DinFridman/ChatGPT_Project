@@ -3,43 +3,37 @@ package com.example.chatgptproject.service;
 import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.TelegramResponse;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
-import com.example.chatgptproject.dto.LoginUserDTO;
+import com.example.chatgptproject.dto.UserSessionDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-import java.util.HashMap;
-import java.util.Map;
-import static com.example.chatgptproject.utils.Constants.UNINITIALIZED_VALUE;
 
 @Log4j2
 @RequiredArgsConstructor
 @Service
 public class TelegramUserStateService {
-    private final Map<Long,LoginUserDTO> usersMap = new HashMap<>();
     private final TelegramResponseDTOMapper telegramResponseDTOMapper;
-
-
+    private final TelegramUsersSessionService telegramUsersSessionService;
 
     public TelegramResponse startRegisterState(Long chatId) {
-
         if(checkIfUserLoggedIn(chatId))
             return handleUnAuthorizedRequestWhenLoggedIn(chatId);
 
-        turnOnRegisterModeInLoginUser(chatId);
+        turnOnRegisterMode(chatId);
 
         return getTelegramResponseDTO(chatId,"Please enter your username.");
     }
 
     public Boolean checkIfRegisterRequest(Long chatId) {
-        return getLoginUserDTOFromUsersMap(chatId).getIsRegisterRequest();
+        return getUserSessionDetails(chatId).getIsRegisterRequest();
     }
 
     public Boolean checkIfUserLoggedIn(Long chatId) {
-        return getLoginUserDTOFromUsersMap(chatId).getIsLoggedIn();
+        return getUserSessionDetails(chatId).getIsLoggedIn();
     }
 
-    public LoginUserDTO getLoginUserDTOFromUsersMap(Long chatId) {//TODO: handle null case
-        return usersMap.get(chatId);
+    public UserSessionDetails getUserSessionDetails(Long chatId) {
+        return telegramUsersSessionService.getUserSessionDetailsFromRepo(chatId);
     }
 
     private TelegramResponse handleUnAuthorizedRequestWhenLoggedIn(Long chatId) {
@@ -51,16 +45,16 @@ public class TelegramUserStateService {
         return telegramResponseDTOMapper.mapToDTO(chatId,message);
     }
 
-    private void turnOnRegisterModeInLoginUser(Long chatId) {
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        setIsRegisterRequestOn(loginUserDTO);
-        addUserToUsersMap(loginUserDTO,chatId);
+    private void turnOnRegisterMode(Long chatId) {
+        UserSessionDetails userSessionDetails = getUserSessionDetails(chatId);
+        setIsRegisterRequestOn(userSessionDetails);
+        updateUserSession(userSessionDetails);
 
-        log.info("user : {} is on register request mode.", loginUserDTO.getUsername());
+        log.info("user : {} is on register request mode.", userSessionDetails.getUsername());
     }
 
-    private void setIsRegisterRequestOn(LoginUserDTO loginUserDTO) {
-        loginUserDTO.setIsRegisterRequest(true);
+    private void setIsRegisterRequestOn(UserSessionDetails userSessionDetails) {
+        userSessionDetails.setIsRegisterRequest(true);
     }
 
     public TelegramResponse startLoginState(Long chatId) {
@@ -68,38 +62,38 @@ public class TelegramUserStateService {
         if(checkIfUserLoggedIn(chatId))
             return handleUnAuthorizedRequestWhenLoggedIn(chatId);
 
-        turnOnLoginModeInLoginUser(chatId);
+        turnOnLoginMode(chatId);
 
         return getTelegramResponseDTO(chatId,"Please enter your username.");
     }
 
-    private void turnOnLoginModeInLoginUser(Long chatId) {
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        loginUserDTO.setIsLoginRequest(true);
-        addUserToUsersMap(loginUserDTO,chatId);
-        log.info("user : {} is on login request mode.", loginUserDTO.getUsername());
+    private void turnOnLoginMode(Long chatId) {
+        UserSessionDetails userSessionDetails = getUserSessionDetails(chatId);
+        userSessionDetails.setIsLoginRequest(true);
+        updateUserSession(userSessionDetails);
+        log.info("user : {} is on login request mode.", userSessionDetails.getUsername());
     }
 
     public Boolean checkIfUsernameHasBeenSet(Long chatId) {
-        return getLoginUserDTOFromUsersMap(chatId).getUsername() != null;
+        return getUserSessionDetails(chatId).getUsername() != null;
     }
 
-    public void setUsernameToLoginUserDTO(String username,Long chatId) {
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        loginUserDTO.setUsername(username);
-        addUserToUsersMap(loginUserDTO,chatId);
+    public void setUsernameToUserSession(String username, Long chatId) {
+        UserSessionDetails userSessionDetails = getUserSessionDetails(chatId);
+        userSessionDetails.setUsername(username);
+        updateUserSession(userSessionDetails);
 
         log.info("username has been set to user successfully.");
     }
 
-    private void addUserToUsersMap(LoginUserDTO loginUserDTO, Long chatId) {
-        usersMap.put(chatId,loginUserDTO);
+    private void updateUserSession(UserSessionDetails userSessionDetails) {
+        telegramUsersSessionService.updateUserSessionDetails(userSessionDetails);
     }
 
-    public void setPasswordToLoginUserDTO(String password, Long chatId) {
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        loginUserDTO.setPassword(password);
-        addUserToUsersMap(loginUserDTO,chatId);
+    public void setPasswordToUserSession(String password, Long chatId) {
+        UserSessionDetails userSessionDetails = getUserSessionDetails(chatId);
+        userSessionDetails.setPassword(password);
+        updateUserSession(userSessionDetails);
 
         log.info("password has been set to user successfully.");
     }
@@ -110,28 +104,29 @@ public class TelegramUserStateService {
     }
 
     private void turnOffUserRegistrationMode(Long chatId) {
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        loginUserDTO.setIsRegisterRequest(false);
-        addUserToUsersMap(loginUserDTO,chatId);
+        UserSessionDetails userSessionDetails = getUserSessionDetails(chatId);
+        userSessionDetails.setIsRegisterRequest(false);
+        updateUserSession(userSessionDetails);
     }
 
     private void resetUsernameAndPasswordToUserLoginDTO(Long chatId) {
-        setPasswordToLoginUserDTO(null,chatId);
-        setUsernameToLoginUserDTO(null,chatId);
+        setPasswordToUserSession(null,chatId);
+        setUsernameToUserSession(null,chatId);
     }
 
     public void turnOffLogInState(Long chatId) {
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        turnOnUserLoggedInState(loginUserDTO);
-        turnOffUserLoginRequestState(loginUserDTO);
+        UserSessionDetails userSessionDetails = getUserSessionDetails(chatId);
+        turnOnUserLoggedInState(userSessionDetails);
+        turnOffUserLoginRequestState(userSessionDetails);
+        telegramUsersSessionService.updateUserSessionDetails(userSessionDetails);
     }
 
-    private void turnOnUserLoggedInState(LoginUserDTO loginUserDTO) {
-        loginUserDTO.setIsLoggedIn(true);
+    private void turnOnUserLoggedInState(UserSessionDetails userSessionDetails) {
+        userSessionDetails.setIsLoggedIn(true);
     }
 
-    private void turnOffUserLoginRequestState(LoginUserDTO loginUserDTO) {
-        loginUserDTO.setIsLoginRequest(false);
+    private void turnOffUserLoginRequestState(UserSessionDetails userSessionDetails) {
+        userSessionDetails.setIsLoginRequest(false);
     }
 
     public void handleStartingChatState(Long chatId) {
@@ -139,22 +134,11 @@ public class TelegramUserStateService {
     }
 
     public Boolean checkIfUserHasSession(Long chatId) {
-        return usersMap.containsKey(chatId);
+        return telegramUsersSessionService.checkIfUserSessionExistByChatId(chatId);
     }
 
     public void createNewSessionForUser(Long chatId) {
-        LoginUserDTO loginUserDTO = createNewLoginUserDTO();
-
-        addUserToUsersMap(loginUserDTO,chatId);
-
-        log.info("-----------------------" +
-                "New session created for user : {}" +
-                "-----------------------", loginUserDTO.getUsername());
-        log.debug("loginUserDTO : {}",loginUserDTO);
-    }
-
-    private LoginUserDTO createNewLoginUserDTO() {
-        return new LoginUserDTO();
+        telegramUsersSessionService.createNewSessionForUser(chatId);
     }
 
     public void handleLogoutRequest(Long chatId) {
@@ -162,38 +146,39 @@ public class TelegramUserStateService {
     }
 
     private void startLogoutState(Long chatId) {
-        usersMap.remove(chatId);
+        telegramUsersSessionService.removeUserSessionDetails(chatId);
     }
 
     public Boolean checkIfLoginRequest(Long chatId) {
-        return (getLoginUserDTOFromUsersMap(chatId).getIsLoginRequest());
+        return (getUserSessionDetails(chatId).getIsLoginRequest());
     }
 
-    public String getUsernameFromMapByChatId(Long chatId) {
-        return getLoginUserDTOFromUsersMap(chatId).getUsername();
+    public String getUsernameFromUserSessionByChatId(Long chatId) {
+        return getUserSessionDetails(chatId).getUsername();
     }
 
     public TelegramResponse startSendConversationState(Long chatId) {
 
         turnOnEmailConversationState(chatId);
 
-        return getTelegramResponseDTO(chatId,"Please provide an email to send your conversation.");
+        return getTelegramResponseDTO(chatId,
+                "Please provide an email to send your conversation.");
     }
 
     public Boolean checkIfEmailConversationStateOn(Long chatId) {
-        return getLoginUserDTOFromUsersMap(chatId).getIsEmailConversationRequest();
+        return getUserSessionDetails(chatId).getIsEmailConversationRequest();
     }
 
     public void turnOnEmailConversationState(Long chatId) {
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        loginUserDTO.setIsEmailConversationRequest(true);
-        addUserToUsersMap(loginUserDTO,chatId);
+        UserSessionDetails userSessionDetails = getUserSessionDetails(chatId);
+        userSessionDetails.setIsEmailConversationRequest(true);
+        updateUserSession(userSessionDetails);
     }
 
     public void turnOffEmailConversationState(Long chatId) {
-        LoginUserDTO loginUserDTO = getLoginUserDTOFromUsersMap(chatId);
-        loginUserDTO.setIsEmailConversationRequest(false);
-        addUserToUsersMap(loginUserDTO,chatId);
+        UserSessionDetails userSessionDetails = getUserSessionDetails(chatId);
+        userSessionDetails.setIsEmailConversationRequest(false);
+        updateUserSession(userSessionDetails);
     }
 
 

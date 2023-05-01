@@ -1,9 +1,11 @@
 package com.example.chatgptproject.service;
 
+import com.example.chatgptproject.dto.LoginUserDTO;
 import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.TelegramResponse;
+import com.example.chatgptproject.dto.mapper.LoginUserDTOMapper;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
-import com.example.chatgptproject.dto.LoginUserDTO;
+import com.example.chatgptproject.dto.UserSessionDetails;
 import com.example.chatgptproject.security.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -18,6 +20,7 @@ public class TelegramLoginService {
     private final TelegramKeyboardService telegramKeyboardService;
     private final AuthService authService;
     private final TelegramResponseDTOMapper telegramResponseDTOMapper;
+    private final LoginUserDTOMapper loginUserDTOMapper;
 
 
     public TelegramResponse handleLoginState(Long chatId, String message) {
@@ -43,7 +46,7 @@ public class TelegramLoginService {
                     chatId, "Username does not exists!\n" +
                             "Please try again.");
 
-        telegramUserStateService.setUsernameToLoginUserDTO(username,chatId);
+        telegramUserStateService.setUsernameToUserSession(username,chatId);
 
         return getTelegramResponseDTO(chatId,
                 "Username entered successfully.\n" +
@@ -68,15 +71,19 @@ public class TelegramLoginService {
     }
 
     private void handlePasswordInput(Long chatId, String password) {
-        telegramUserStateService.setPasswordToLoginUserDTO(password,chatId);
+        telegramUserStateService.setPasswordToUserSession(password,chatId);
     }
 
     @Transactional
     public void loginUser(Long chatId) {
-        LoginUserDTO loginUserDTO = telegramUserStateService.getLoginUserDTOFromUsersMap(chatId);
+        UserSessionDetails userSessionDetails =
+                telegramUserStateService.getUserSessionDetails(chatId);
+        LoginUserDTO loginUserDTO = loginUserDTOMapper.mapToDTO(userSessionDetails.getUsername(),
+                userSessionDetails.getPassword());
+
         authService.loginUser(loginUserDTO);
 
-        log.info("username : {} logged in successfully.", loginUserDTO.getUsername());
+        log.info("username : {} logged in successfully.", userSessionDetails.getUsername());
 
         telegramUserStateService.turnOffLogInState(chatId);
     }

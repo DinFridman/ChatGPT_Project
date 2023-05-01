@@ -3,7 +3,7 @@ package com.example.chatgptproject.service;
 import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.TelegramResponse;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
-import com.example.chatgptproject.dto.LoginUserDTO;
+import com.example.chatgptproject.dto.UserSessionDetails;
 import com.example.chatgptproject.security.dto.RegisterDTOMapper;
 import com.example.chatgptproject.security.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ public class TelegramRegistrationService {
             return telegramKeyboardService.createTelegramResponseWithLoginRegisterKeyboard(
                     chatId, "username is already exists!");
 
-        telegramUserStateService.setUsernameToLoginUserDTO(username,chatId);
+        telegramUserStateService.setUsernameToUserSession(username,chatId);
 
         log.info("username : {} entered successfully to registration.", username);
 
@@ -60,16 +60,16 @@ public class TelegramRegistrationService {
     }
 
     private void handlePasswordInput(Long chatId, String password) {
-        telegramUserStateService.setPasswordToLoginUserDTO(password,chatId);
+        telegramUserStateService.setPasswordToUserSession(password,chatId);
     }
 
     private void registerUser(Long chatId) {
-        LoginUserDTO loginUserDTO = telegramUserStateService.getLoginUserDTOFromUsersMap(chatId);
+        UserSessionDetails userSessionDetails = telegramUserStateService.getUserSessionDetails(chatId);
         authService.registerUser(registerDTOMapper.mapToDTO(
-                loginUserDTO.getUsername(),
-                loginUserDTO.getPassword()));
+                userSessionDetails.getUsername(),
+                userSessionDetails.getPassword()));
 
-        log.info("user : {} registered successfully.", loginUserDTO.getUsername());
+        log.info("user : {} registered successfully.", userSessionDetails.getUsername());
 
         telegramUserStateService.turnOffRegistrationState(chatId);
     }

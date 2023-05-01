@@ -1,12 +1,12 @@
 package com.example.chatgptproject.dto.mapper;
 
-
 import com.example.chatgptproject.dto.LoginUserDTO;
 
 public class LoginUserDTOMapper {
-    public LoginUserDTO mapToDTO(Long chatId) {
+    public LoginUserDTO mapToDTO(String username, String password) {
         LoginUserDTO loginUserDTO = new LoginUserDTO();
-        loginUserDTO.setChatId(chatId);
+        loginUserDTO.setUsername(username);
+        loginUserDTO.setPassword(password);
         return loginUserDTO;
     }
 }
