@@ -26,7 +26,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Cacheable(value = "appUsers", key = "#username")
     @Override
     public AppUserEntity getAppUserByUsername(String username) {
-        log.info("--------------------entered function!--------------------");
+        log.info("--------------------entered getAppUserByUsername function!--------------------");
         Optional<AppUserEntity> user =
                 appUserRepository.findAppUserEntityByUsername(username);
         if(user.isEmpty())
@@ -37,7 +37,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Cacheable(value = "appUsers", key = "#userId")
     @Override
     public AppUserEntity getAppUserByUserId(Long userId) {
-        log.info("--------------------entered function!--------------------");
+        log.info("--------------------entered getAppUserById function!--------------------");
         Optional<AppUserEntity> user =
                 appUserRepository.findAppUserEntityByUserId(userId);
         if(user.isEmpty())
