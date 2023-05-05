@@ -1,53 +1,86 @@
 package com.example.chatgptproject.service;
 
-import com.example.chatgptproject.model.ChatMessageEntity;
+import com.example.chatgptproject.dto.*;
+import com.example.chatgptproject.dto.mapper.OpenAIPromptDTOMapper;
+import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
+import com.example.chatgptproject.dto.openAI.OpenAIPromptDTO;
+import com.example.chatgptproject.model.AppUserEntity;
 import com.example.chatgptproject.service.openAIService.OpenAIRequestHandlerImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.json.JSONException;
+import com.example.chatgptproject.utils.enums.Roles;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.verify;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TelegramRequestServiceImplTest {
     @InjectMocks private TelegramRequestServiceImpl underTest;
-    @Mock private OpenAIRequestHandlerImpl generateAnswerService;
+    @Mock private OpenAIRequestHandlerImpl openAIRequestHandler;
     @Mock private MessagesServiceImpl messagesServiceImpl;
-    @Captor private ArgumentCaptor<ChatMessageEntity> captor;
+    @Mock private TelegramResponseDTOMapper telegramResponseDTOMapper;
+    private ChatMessageDTO chatMessageDTO;
+    private ConversationDTO conversationDTO;
+    private OpenAIPromptDTO openAIPromptDTO;
+    private TelegramMessageResponseDTO expectedTelegramResponse;
+    private AppUserEntity appUser;
 
+    @BeforeEach
+    public void setup() {
+        Long chatId = 12345L;
+        chatMessageDTO = ChatMessageDTO.builder()
+                .chatId(chatId)
+                .message("Hello")
+                .username("Test")
+                .updateId(54321L)
+                .role(Roles.USER.toString())
+                .build();
+
+        ArrayList<OpenAIPromptDTO> messagesArray = new ArrayList<>();
+        messagesArray.add(
+                new OpenAIPromptDTOMapper().mapToOpenAIPromptDTO(
+                        chatMessageDTO.getRole(),
+                        chatMessageDTO.getMessage()));
+
+        conversationDTO = ConversationDTO.builder()
+                .conversation(messagesArray)
+                .build();
+
+        openAIPromptDTO = new OpenAIPromptDTOMapper()
+                .mapToOpenAIPromptDTO(Roles.ASSISTANCE.toString(), "Hi there!");
+
+        expectedTelegramResponse = TelegramMessageResponseDTO.builder()
+                .text(openAIPromptDTO.content())
+                .chatId(chatId)
+                .build();
+
+        appUser = new AppUserEntity();
+        appUser.setUserId(1L);
+        appUser.setUsername("Test");
+        appUser.setPassword("TestPass");
+        appUser.setLoggedInDate(LocalDateTime.now());
+    }
 
     @Test
-    void generateAnswer() throws JSONException, JsonProcessingException {
-       /* //given
-        ChatMessageDTO chatMessage = ChatMessageDTO.builder()
-                .updateId(1000)
-                .chatId(10000)
-                .message("Hello")
-                .userId(2)
-                .role(Roles.USER.toString())
-                .build();
-        OpenAIPromptDTO prompt = OpenAIPromptDTO.builder()
-                .role(Roles.USER.toString())
-                .content("Hello")
-                .build();
-        ArrayList<OpenAIPromptDTO> messages = new ArrayList<>();
-        messages.add(prompt);
-        ConversationDTO conversationDTO =
-                ConversationDTO.builder()
-                        .conversation(messages)
-                                .build();
-        //when
-        underTest.generateAnswer(chatMessage);
+    void shouldHandleTelegramResponse() throws IOException, InterruptedException {
+        when(messagesServiceImpl.getAppUserFromChatMessageDTO(chatMessageDTO)).thenReturn(appUser);
+        when(messagesServiceImpl.getConversationByUserId(appUser.getUserId())).thenReturn(conversationDTO);
+        when(openAIRequestHandler.generateAnswer(conversationDTO)).thenReturn(openAIPromptDTO);
+        when(telegramResponseDTOMapper.mapToDTO(
+                chatMessageDTO.getChatId(),
+                "Hi there!"))
+                .thenReturn(expectedTelegramResponse);
 
-        //then
-        verify(generateAnswerService).generateAnswer(conversationDTO);*/
+        TelegramMessageResponseDTO returnedTelegramResponse =
+                underTest.handleTelegramRequest(chatMessageDTO);
+
+        assertThat(returnedTelegramResponse).isEqualTo(expectedTelegramResponse);
 
     }
+
 }

@@ -1,6 +1,6 @@
 package com.example.chatgptproject.adviser;
 
-import com.example.chatgptproject.exception.mail.MailSendFailureException;
+import com.example.chatgptproject.exception.mail.EmailSendFailureException;
 import com.example.chatgptproject.exception.register.RegisterAbstractException;
 import com.example.chatgptproject.exception.register.UserIsRegisteredException;
 import com.example.chatgptproject.model.ErrorBody;
@@ -22,8 +22,8 @@ public class ExceptionController {
                 HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = MailSendFailureException.class)
-    public ResponseEntity<ErrorBody> handleException(MailSendFailureException exception) {
+    @ExceptionHandler(value = EmailSendFailureException.class)
+    public ResponseEntity<ErrorBody> handleException(EmailSendFailureException exception) {
         return new ResponseEntity<>(
                 new ErrorBody(exception.getStatus().name(),
                         exception.getStatus().value(),

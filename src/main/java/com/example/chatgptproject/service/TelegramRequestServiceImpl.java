@@ -4,10 +4,10 @@ import com.example.chatgptproject.dto.ChatMessageDTO;
 import com.example.chatgptproject.dto.ConversationDTO;
 import com.example.chatgptproject.dto.openAI.OpenAIPromptDTO;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
+import com.example.chatgptproject.service.openAIService.OpenAIRequestHandlerImpl;
 import com.example.chatgptproject.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Log4j2
 public class TelegramRequestServiceImpl implements TelegramRequestService{
-    private final com.example.chatgptproject.service.openAIService.OpenAIRequestHandlerImpl OpenAIRequestHandlerImpl;
+    private final OpenAIRequestHandlerImpl OpenAIRequestHandlerImpl;
     private final MessagesServiceImpl messagesServiceImpl;
     private final TelegramResponseDTOMapper telegramResponseDTOMapper;
     private final EmailServiceImpl emailService;
@@ -45,13 +45,8 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
         return createTelegramResponse(chatId,openAIPromptDTO.content());
     }
 
-    @Override
-    public void addChatMessageToConversation(ChatMessageDTO chatMessageDTO) {
+    private void addChatMessageToConversation(ChatMessageDTO chatMessageDTO) {
         messagesServiceImpl.addChatMessage(chatMessageDTO);
-    }
-
-    private Long getUserIdFromChatMessage(ChatMessageDTO chatMessageDTO) {
-        return messagesServiceImpl.getAppUserFromChatMessageDTO(chatMessageDTO).getUserId();
     }
 
     @Override
@@ -62,26 +57,21 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
                 conversationDTO, recipient);
     }
 
-    @Override
-    public boolean isShareConversationRequest(ChatMessageDTO chatMessageDTO) {
-        return chatMessageDTO.getMessage()
-                .startsWith(Constants.SHARE_CONVERSATION_BY_EMAIL_REQUEST);
-    }
-
-    @Override
-    public ConversationDTO getCurrentConversation(ChatMessageDTO chatMessageDTO) {
+    private ConversationDTO getCurrentConversation(ChatMessageDTO chatMessageDTO) {
         Long userId = getUserIdFromChatMessage(chatMessageDTO);
         return messagesServiceImpl.getConversationByUserId(userId);
     }
 
-    @Override
-    public OpenAIPromptDTO generateAnswerByRequestHandler(ConversationDTO conversationDTO)
+    private Long getUserIdFromChatMessage(ChatMessageDTO chatMessageDTO) {
+        return messagesServiceImpl.getAppUserFromChatMessageDTO(chatMessageDTO).getUserId();
+    }
+
+    private OpenAIPromptDTO generateAnswerByRequestHandler(ConversationDTO conversationDTO)
             throws IOException, InterruptedException {
         return OpenAIRequestHandlerImpl.generateAnswer(conversationDTO);
     }
 
-    @Override
-    public ChatMessageDTO createChatMessageDTOForOpenAIResponse(ChatMessageDTO chatMessageDTO,
+    private ChatMessageDTO createChatMessageDTOForOpenAIResponse(ChatMessageDTO chatMessageDTO,
                                                       OpenAIPromptDTO openAIPromptDTO) {
         return createChatMessageDTO(
                 chatMessageDTO,
@@ -89,8 +79,7 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
                 openAIPromptDTO.content());
     }
 
-    @Override
-    public ChatMessageDTO createChatMessageDTO(ChatMessageDTO chatMessageDTO,
+    private ChatMessageDTO createChatMessageDTO(ChatMessageDTO chatMessageDTO,
                                                String role, String content) {
 
         return ChatMessageDTO.builder()
@@ -102,8 +91,7 @@ public class TelegramRequestServiceImpl implements TelegramRequestService{
                 .build();
     }
 
-    @Override
-    public TelegramMessageResponseDTO createTelegramResponse(Long chatId,
+    private TelegramMessageResponseDTO createTelegramResponse(Long chatId,
                                                              String content) {
         return telegramResponseDTOMapper.mapToDTO(chatId, content);
     }

@@ -2,12 +2,14 @@ package com.example.chatgptproject.service;
 
 import com.example.chatgptproject.dto.ConversationDTO;
 import com.example.chatgptproject.dto.mapper.EmailDetailsDTOMapper;
-import com.example.chatgptproject.exception.mail.MailSendFailureException;
+import com.example.chatgptproject.exception.mail.InvalidEmailProvidedException;
+import com.example.chatgptproject.exception.mail.EmailSendFailureException;
 import com.example.chatgptproject.dto.EmailDetailsDTO;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
@@ -15,7 +17,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import java.io.File;
-import static com.example.chatgptproject.utils.Constants.SHARE_CONVERSATION_BY_EMAIL_REQUEST;
+
+import static com.example.chatgptproject.utils.Constants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +33,15 @@ public class EmailServiceImpl implements EmailService{
     public void handleShareConversationRequest(ConversationDTO conversationDTO,
                                                String recipient)
     {
+        validateEmail(recipient);
         EmailDetailsDTO details = emailDetailsDTOMapper.mapToDTO(conversationDTO, recipient);
         sendSimpleMail(details);
+    }
+
+    private void validateEmail(String email) {
+        if (EmailValidator.getInstance().isValid(email))
+            return;
+        throw new InvalidEmailProvidedException(INVALID_EMAIL_PROVIDED_MESSAGE);
     }
 
     private void sendSimpleMail(EmailDetailsDTO details) {
@@ -46,7 +56,7 @@ public class EmailServiceImpl implements EmailService{
 
         }
         catch (Exception e) {
-            throw new MailSendFailureException("Error while sending mail!");
+            throw new EmailSendFailureException(ERROR_WHILE_SENDING_EMAIL_MESSAGE);
 
         }
     }
@@ -78,8 +88,8 @@ public class EmailServiceImpl implements EmailService{
             log.info("Mail sent successfully.");
         }
 
-        catch (MessagingException e) {
-            throw new MailSendFailureException("Error while sending mail!");
+        catch (Exception e) {
+            throw new EmailSendFailureException(ERROR_WHILE_SENDING_EMAIL_MESSAGE);
         }
     }
 
