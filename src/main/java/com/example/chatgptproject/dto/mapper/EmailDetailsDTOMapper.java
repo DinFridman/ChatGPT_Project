@@ -2,7 +2,7 @@ package com.example.chatgptproject.dto.mapper;
 
 import com.example.chatgptproject.dto.ConversationDTO;
 import com.example.chatgptproject.dto.EmailDetailsDTO;
-import com.example.chatgptproject.utils.Constants;
+import com.example.chatgptproject.utils.constants.Constants;
 
 public class EmailDetailsDTOMapper {
     public EmailDetailsDTO mapToDTO(ConversationDTO conversationDTO, String recipient) {

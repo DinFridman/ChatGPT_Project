@@ -16,7 +16,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static com.example.chatgptproject.utils.Constants.*;
+import static com.example.chatgptproject.utils.constants.Constants.*;
 
 @Service
 @RequiredArgsConstructor

@@ -15,8 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class TelegramRequestServiceImplTest {
@@ -68,10 +67,10 @@ class TelegramRequestServiceImplTest {
 
     @Test
     void shouldHandleTelegramResponse() throws IOException, InterruptedException {
-        when(messagesServiceImpl.getAppUserFromChatMessageDTO(chatMessageDTO)).thenReturn(appUser);
-        when(messagesServiceImpl.getConversationByUserId(appUser.getUserId())).thenReturn(conversationDTO);
-        when(openAIRequestHandler.generateAnswer(conversationDTO)).thenReturn(openAIPromptDTO);
-        when(telegramResponseDTOMapper.mapToDTO(
+        Mockito.when(messagesServiceImpl.getAppUserFromChatMessageDTO(chatMessageDTO)).thenReturn(appUser);
+        Mockito.when(messagesServiceImpl.getConversationByUserId(appUser.getUserId())).thenReturn(conversationDTO);
+        Mockito.when(openAIRequestHandler.generateAnswer(conversationDTO)).thenReturn(openAIPromptDTO);
+        Mockito.when(telegramResponseDTOMapper.mapToDTO(
                 chatMessageDTO.getChatId(),
                 "Hi there!"))
                 .thenReturn(expectedTelegramResponse);
@@ -79,7 +78,7 @@ class TelegramRequestServiceImplTest {
         TelegramMessageResponseDTO returnedTelegramResponse =
                 underTest.handleTelegramRequest(chatMessageDTO);
 
-        assertThat(returnedTelegramResponse).isEqualTo(expectedTelegramResponse);
+        assertEquals(returnedTelegramResponse,expectedTelegramResponse);
 
     }
 

@@ -11,7 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-import java.util.Optional;
+
 
 @Service
 @CacheConfig(cacheNames = "appUsers")
@@ -20,32 +20,33 @@ import java.util.Optional;
 public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
 
-    @Cacheable(value = "appUsers", key = "#username")
+    @Cacheable(value = "appUsers")
     @Override
     public AppUserEntity getAppUserByUsername(String username) {
-        log.info("--------------------entered getAppUserByUsername function!--------------------");
-        Optional<AppUserEntity> user =
-                appUserRepository.findAppUserEntityByUsername(username);
-        if(user.isEmpty())
-            throw new UsernameNotFoundException("Username is not found!");
-        return user.get();
+        AppUserEntity user =
+                appUserRepository.findAppUserEntityByUsername(username)
+                        .orElseThrow(() -> {
+                    throw new UsernameNotFoundException("User is not found!");
+                });
+
+        return user;
     }
 
-    @Cacheable(value = "appUsers", key = "#userId")
+    @Cacheable(value = "appUsers")
     @Override
     public AppUserEntity getAppUserByUserId(Long userId) {
-        log.info("--------------------entered getAppUserById function!--------------------");
-        Optional<AppUserEntity> user =
-                appUserRepository.findAppUserEntityByUserId(userId);
-        if(user.isEmpty())
-            throw new UsernameNotFoundException("User is not found!");
-        return user.get();
+        AppUserEntity user =
+                appUserRepository.findAppUserEntityByUserId(userId)
+                        .orElseThrow(() -> {
+                            throw new UsernameNotFoundException("User is not found!");
+                        });
+        return user;
     }
 
 
     @Override
     public void addAppUser(AppUserEntity appUser) {
-        if(checkIfAppUserExists(appUser.getUsername()))
+        if(checkIfAppUserExistsByUsername(appUser.getUsername()))
             throw new UserIsRegisteredException();
 
         log.info("user saved successfully.");
@@ -54,7 +55,8 @@ public class AppUserServiceImpl implements AppUserService {
         appUserRepository.save(appUser);
     }
 
-    @CachePut(value = "appUsers", key = "#username")
+    @CachePut(value = "appUsers")
+    @Override
     public AppUserEntity updateAppUserLoggedInDate(String username) {
         AppUserEntity appUser = getAppUserByUsername(username);
         appUser.setLoggedInDate(LocalDateTime.now());
@@ -65,7 +67,7 @@ public class AppUserServiceImpl implements AppUserService {
         return appUser;
     }
 
-    public boolean checkIfAppUserExists(String username) {
+    public boolean checkIfAppUserExistsByUsername(String username) {
         return appUserRepository.existsAppUserEntityByUsername(username);
     }
 }

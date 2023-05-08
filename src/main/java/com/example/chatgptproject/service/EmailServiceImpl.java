@@ -18,7 +18,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import java.io.File;
 
-import static com.example.chatgptproject.utils.Constants.*;
+import static com.example.chatgptproject.utils.constants.TelegramResponseConstants.ERROR_WHILE_SENDING_EMAIL_MESSAGE;
+import static com.example.chatgptproject.utils.constants.TelegramResponseConstants.INVALID_EMAIL_PROVIDED_MESSAGE;
 
 @Service
 @RequiredArgsConstructor
@@ -39,9 +40,8 @@ public class EmailServiceImpl implements EmailService{
     }
 
     private void validateEmail(String email) {
-        if (EmailValidator.getInstance().isValid(email))
-            return;
-        throw new InvalidEmailProvidedException(INVALID_EMAIL_PROVIDED_MESSAGE);
+        if (!EmailValidator.getInstance().isValid(email))
+            throw new InvalidEmailProvidedException(INVALID_EMAIL_PROVIDED_MESSAGE);
     }
 
     private void sendSimpleMail(EmailDetailsDTO details) {

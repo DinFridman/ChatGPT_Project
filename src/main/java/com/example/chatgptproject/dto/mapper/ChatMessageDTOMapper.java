@@ -1,6 +1,6 @@
 package com.example.chatgptproject.dto.mapper;
 import com.example.chatgptproject.dto.ChatMessageDTO;
-import com.example.chatgptproject.utils.Constants;
+import com.example.chatgptproject.utils.constants.Constants;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 public class ChatMessageDTOMapper {

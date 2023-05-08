@@ -8,18 +8,18 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Getter
-@Setter
+@Data
 @Entity(name = "AppUser")
 @NoArgsConstructor
 @Table(name = "app_users")
-public class AppUserEntity {
+public class AppUserEntity implements Serializable {
     @Id
     @GeneratedValue(
             strategy = GenerationType.IDENTITY

@@ -12,15 +12,13 @@ import com.example.chatgptproject.utils.enums.Roles;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -83,31 +81,31 @@ class MessagesServiceImplTest {
 
     @Test
     void shouldAddChatMessage() {
-        when(appUserService.getAppUserByUsername("Test")).thenReturn(expectedAppUser);
-        when(chatMessageMapper.mapToEntity(chatMessageDTO,expectedAppUser)).thenReturn(chatMessageEntity);
+        Mockito.when(appUserService.getAppUserByUsername("Test")).thenReturn(expectedAppUser);
+        Mockito.when(chatMessageMapper.mapToEntity(chatMessageDTO,expectedAppUser)).thenReturn(chatMessageEntity);
 
         underTest.addChatMessage(chatMessageDTO);
         verify(chatRepository).save(captor.capture());
-        assertThat(captor.getValue()).isEqualTo(chatMessageEntity);
+        assertEquals(captor.getValue(),chatMessageEntity);
     }
 
     @Test
     void shouldGetAppUser() {
-        when(appUserService.getAppUserByUsername("Test")).thenReturn(expectedAppUser);
+        Mockito.when(appUserService.getAppUserByUsername("Test")).thenReturn(expectedAppUser);
 
         AppUserEntity actualAppUser = underTest.getAppUserFromChatMessageDTO(chatMessageDTO);
 
-        assertThat(actualAppUser).isEqualTo(expectedAppUser);
+        assertEquals(actualAppUser,expectedAppUser);
     }
 
     @Test
     void getConversationByUserId() {
-        when(appUserService.getAppUserByUserId(expectedAppUser.getUserId())).thenReturn(expectedAppUser);
-        when(openAIPromptDTOMapper.mapToOpenAIPromptDTO(
+        Mockito.when(appUserService.getAppUserByUserId(expectedAppUser.getUserId())).thenReturn(expectedAppUser);
+        Mockito.when(openAIPromptDTOMapper.mapToOpenAIPromptDTO(
                 chatMessageEntity.getConversationRole(),
                 chatMessageEntity.getMessage()))
                 .thenReturn(openAIPromptDTO);
-        when(chatRepository.findMessagesByUserIdAndDate(
+        Mockito.when(chatRepository.findMessagesByUserIdAndDate(
                 expectedAppUser.getUserId(),
                 expectedAppUser.getLoggedInDate()))
                 .thenReturn(chatMessageEntities);
@@ -115,6 +113,6 @@ class MessagesServiceImplTest {
         ConversationDTO actualConversationDTO =
                 underTest.getConversationByUserId(expectedAppUser.getUserId());
 
-        assertThat(expectedConversationDTO).isEqualToComparingFieldByField(actualConversationDTO);
+        assertEquals(expectedConversationDTO,actualConversationDTO);
     }
 }

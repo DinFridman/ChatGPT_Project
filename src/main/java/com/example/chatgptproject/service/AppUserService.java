@@ -6,4 +6,5 @@ public interface AppUserService {
     AppUserEntity getAppUserByUsername(String username);
     AppUserEntity getAppUserByUserId(Long userId);
     void addAppUser(AppUserEntity appUser);
+    AppUserEntity updateAppUserLoggedInDate(String username);
 }

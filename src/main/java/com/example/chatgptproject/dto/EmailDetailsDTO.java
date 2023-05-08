@@ -3,8 +3,7 @@ package com.example.chatgptproject.dto;
 import lombok.*;
 
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

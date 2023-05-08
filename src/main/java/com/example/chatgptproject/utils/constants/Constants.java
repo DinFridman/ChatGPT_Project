@@ -1,7 +1,7 @@
-package com.example.chatgptproject.utils;
+package com.example.chatgptproject.utils.constants;
 
 public class Constants {
-    public static final String OPEN_AI_KEY = "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";
+    public static final String OPEN_AI_KEY = "";
     public static final String CHAT_COMPLETION_URL = "https://api.openai.com/v1/chat/completions";
     public static final String TELEGRAM_BOT_NAME = "chatGPT_project_bot";
     public static final String TELEGRAM_URL = "https://api.telegram.org/bot";
@@ -12,9 +12,5 @@ public class Constants {
     public static final Integer OPEN_AI_MAX_TOKENS = 2000;
     public static final double OPEN_AI_TEMPERATURE = 0.8;
     public static final String EMAIL_SUBJECT = "Your conversation with ChatGPT";
-    public static final String SHARE_CONVERSATION_BY_EMAIL_REQUEST = "/sendConversation";
-    public static final String SHARE_CONVERSATION_BY_EMAIL_RESPONSE =
-            "Conversation sent successfully.";
-    public static final String INVALID_EMAIL_PROVIDED_MESSAGE = "Invalid email provided!";
-    public static final String ERROR_WHILE_SENDING_EMAIL_MESSAGE = "Error while sending email!";
+
 }

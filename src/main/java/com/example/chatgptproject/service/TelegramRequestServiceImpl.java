@@ -5,7 +5,6 @@ import com.example.chatgptproject.dto.ConversationDTO;
 import com.example.chatgptproject.dto.openAI.OpenAIPromptDTO;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
 import com.example.chatgptproject.service.openAIService.OpenAIRequestHandlerImpl;
-import com.example.chatgptproject.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;

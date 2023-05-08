@@ -1,7 +1,7 @@
 package com.example.chatgptproject.bot;
 
 import com.example.chatgptproject.dto.TelegramResponse;
-import com.example.chatgptproject.service.TelegramGatewayService;
+import com.example.chatgptproject.service.TelegramGatewayServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +17,14 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static com.example.chatgptproject.utils.Constants.*;
+import static com.example.chatgptproject.utils.constants.Constants.*;
 
 @Component
 @RequiredArgsConstructor
 @Log4j2
 public class TelegramBot extends TelegramLongPollingBot {
     private final ObjectMapper objectMapper;
-    private final TelegramGatewayService telegramGatewayService;
+    private final TelegramGatewayServiceImpl telegramGatewayServiceImpl;
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -32,7 +32,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             TelegramResponse telegramMessageResponseDTO;
             try {
                 telegramMessageResponseDTO =
-                        telegramGatewayService.telegramRequestsGateway(update);
+                        telegramGatewayServiceImpl.telegramRequestsGateway(update);
 
                 sendTelegramMessage(telegramMessageResponseDTO);
             } catch (Exception e) {

@@ -7,22 +7,23 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Entity(name = "ChatMessageEntity")
 @Table(name = "chat_messages")
-public class ChatMessageEntity {
+public class ChatMessageEntity implements Serializable {
 
     @Id
     @GeneratedValue(

@@ -2,7 +2,6 @@ package com.example.chatgptproject.security.service;
 
 import com.example.chatgptproject.dto.LoginUserDTO;
 import com.example.chatgptproject.model.AppUserEntity;
-import com.example.chatgptproject.dto.UserSessionDetails;
 import com.example.chatgptproject.security.dto.RegisterDTO;
 import com.example.chatgptproject.security.jwt.JWTUtils;
 import com.example.chatgptproject.service.AppUserServiceImpl;
@@ -64,6 +63,6 @@ public class AuthService {
     }
 
     public Boolean checkIfAppUserExists(String username) {
-        return appUserService.checkIfAppUserExists(username);
+        return appUserService.checkIfAppUserExistsByUsername(username);
     }
 }
