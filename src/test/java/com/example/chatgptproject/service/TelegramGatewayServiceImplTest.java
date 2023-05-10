@@ -224,9 +224,7 @@ class TelegramGatewayServiceImplTest {
         Mockito.when(message.getChatId()).thenReturn(chatId);
         Mockito.when(telegramRequestTypeResolver.resolve(message.getText(),chatId))
                 .thenReturn(REGISTER_REQUEST);
-        Mockito.when(telegramKeyboardServiceImpl
-                        .createTelegramResponseWithChatMainKeyboard(
-                                chatId,TELEGRAM_SUCCESSFULLY_REGISTERED_MESSAGE))
+        Mockito.when(telegramRegistrationServiceImpl.handleRegisterState(chatId,message.getText()))
                 .thenReturn(expectedTelegramResponseDTO);
 
         TelegramResponse actualResponse = underTest.handleTelegramRequest(update);

@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import static com.example.chatgptproject.utils.constants.TelegramResponseConstants.*;
 
 @Log4j2
@@ -45,7 +43,7 @@ public class TelegramLoginServiceImpl implements TelegramLoginService{
 
         telegramUserStateServiceImpl.setUsernameToUserSession(username,chatId);
 
-        return getTelegramResponseDTO(chatId,
+        return createTelegramResponseDTO(chatId,
                 TELEGRAM_USERNAME_ENTERED_SUCCESSFULLY_MESSAGE +
                 "\n" + TELEGRAM_ENTER_PASSWORD_MESSAGE);
     }
@@ -63,14 +61,7 @@ public class TelegramLoginServiceImpl implements TelegramLoginService{
         return telegramKeyboardServiceImpl.createTelegramResponseWithLoginRegisterKeyboard(chatId,text);
     }
 
-    private TelegramResponse createTelegramResponse(Long chatId, String text) {
-        return TelegramMessageResponseDTO.builder()
-                .text(text)
-                .chatId(chatId)
-                .build();
-    }
-
-    private TelegramMessageResponseDTO getTelegramResponseDTO(Long chatId, String message) {
+    private TelegramMessageResponseDTO createTelegramResponseDTO(Long chatId, String message) {
         return telegramResponseDTOMapper.mapToDTO(chatId,message);
     }
 
@@ -92,7 +83,7 @@ public class TelegramLoginServiceImpl implements TelegramLoginService{
         } catch (BadCredentialsException e) {
             log.info("username : {} failed to login since password provided is incorrect.",
                     userSessionDetails.getUsername());
-            return createTelegramResponse(chatId,TELEGRAM_INCORRECT_PASSWORD_ENTERED);
+            return createTelegramResponseDTO(chatId,TELEGRAM_INCORRECT_PASSWORD_ENTERED);
         }
 
         log.info("username : {} logged in successfully.", userSessionDetails.getUsername());
