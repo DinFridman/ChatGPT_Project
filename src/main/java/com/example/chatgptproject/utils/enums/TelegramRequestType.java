@@ -11,8 +11,7 @@ public enum TelegramRequestType {
     NOT_LOGGED_IN("notLoggedIn"),
     SEND_CONVERSATION_BUTTON_PRESSED("sendConversationButtonPressed"),
     SEND_CONVERSATION_REQUEST("sendConversationRequest"),
-    GENERATE_ANSWER("generateAnswer")
-    ;
+    GENERATE_ANSWER("generateAnswer");
     private final String requestType;
 
     TelegramRequestType(String requestType) {

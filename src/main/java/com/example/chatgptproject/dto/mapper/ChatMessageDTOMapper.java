@@ -9,7 +9,6 @@ public class ChatMessageDTOMapper {
                     .updateId(update.getUpdateId().longValue())
                             .chatId(update.getMessage().getChatId())
                                     .message(update.getMessage().getText())
-                                            .chatId(update.getMessage().getChatId())
                                                     .username(username)
                                                             .role(Constants.USER_ROLE)
                 .build();

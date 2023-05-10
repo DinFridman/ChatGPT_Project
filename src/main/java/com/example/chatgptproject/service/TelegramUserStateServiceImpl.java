@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import static com.example.chatgptproject.utils.constants.TelegramResponseConstants.*;
+
 @Log4j2
 @RequiredArgsConstructor
 @Service
@@ -22,7 +24,7 @@ public class TelegramUserStateServiceImpl implements TelegramUserStateService{
 
         turnOnRegisterMode(chatId);
 
-        return getTelegramResponseDTO(chatId,"Please enter your username.");
+        return getTelegramResponseDTO(chatId,TELEGRAM_ENTER_USERNAME_MESSAGE);
     }
 
     @Override
@@ -69,7 +71,7 @@ public class TelegramUserStateServiceImpl implements TelegramUserStateService{
 
         turnOnLoginMode(chatId);
 
-        return getTelegramResponseDTO(chatId,"Please enter your username.");
+        return getTelegramResponseDTO(chatId,TELEGRAM_ENTER_USERNAME_MESSAGE);
     }
 
     private void turnOnLoginMode(Long chatId) {
@@ -178,7 +180,7 @@ public class TelegramUserStateServiceImpl implements TelegramUserStateService{
         turnOnEmailConversationState(chatId);
 
         return getTelegramResponseDTO(chatId,
-                "Please provide an email to send your conversation.");
+                TELEGRAM_ENTER_EMAIL_MESSAGE);
     }
 
     @Override

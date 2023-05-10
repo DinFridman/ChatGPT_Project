@@ -23,6 +23,7 @@ class TelegramRequestServiceImplTest {
     @Mock private OpenAIRequestHandlerImpl openAIRequestHandler;
     @Mock private MessagesServiceImpl messagesServiceImpl;
     @Mock private TelegramResponseDTOMapper telegramResponseDTOMapper;
+    @Mock private EmailServiceImpl emailService;
     private ChatMessageDTO chatMessageDTO;
     private ConversationDTO conversationDTO;
     private OpenAIPromptDTO openAIPromptDTO;
@@ -66,19 +67,22 @@ class TelegramRequestServiceImplTest {
     }
 
     @Test
-    void shouldHandleTelegramResponse() throws IOException, InterruptedException {
-        Mockito.when(messagesServiceImpl.getAppUserFromChatMessageDTO(chatMessageDTO)).thenReturn(appUser);
-        Mockito.when(messagesServiceImpl.getConversationByUserId(appUser.getUserId())).thenReturn(conversationDTO);
-        Mockito.when(openAIRequestHandler.generateAnswer(conversationDTO)).thenReturn(openAIPromptDTO);
+    void shouldHandleTelegramRequest() throws IOException, InterruptedException {
+        Mockito.when(messagesServiceImpl.getAppUserFromChatMessageDTO(chatMessageDTO))
+                .thenReturn(appUser);
+        Mockito.when(messagesServiceImpl.getConversationByUserId(appUser.getUserId()))
+                .thenReturn(conversationDTO);
+        Mockito.when(openAIRequestHandler.generateAnswer(conversationDTO))
+                .thenReturn(openAIPromptDTO);
         Mockito.when(telegramResponseDTOMapper.mapToDTO(
-                chatMessageDTO.getChatId(),
-                "Hi there!"))
+                        chatMessageDTO.getChatId(),
+                        "Hi there!"))
                 .thenReturn(expectedTelegramResponse);
 
         TelegramMessageResponseDTO returnedTelegramResponse =
                 underTest.handleTelegramRequest(chatMessageDTO);
 
-        assertEquals(returnedTelegramResponse,expectedTelegramResponse);
+        assertEquals(returnedTelegramResponse, expectedTelegramResponse);
 
     }
 

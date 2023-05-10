@@ -38,9 +38,7 @@ public class TelegramLoginServiceImpl implements TelegramLoginService{
         return !telegramUserStateServiceImpl.checkIfUsernameHasBeenSet(chatId);
     }
 
-    @Override
-    @Transactional
-    public TelegramResponse handleUsernameInput(Long chatId, String username) {
+    private TelegramResponse handleUsernameInput(Long chatId, String username) {
         if (checkIfUsernameNotExists(username))
             return createTelegramResponseWithLoginRegisterKeyboard(
                     chatId, TELEGRAM_USERNAME_DOESNT_EXISTS_MESSAGE);
@@ -48,7 +46,8 @@ public class TelegramLoginServiceImpl implements TelegramLoginService{
         telegramUserStateServiceImpl.setUsernameToUserSession(username,chatId);
 
         return getTelegramResponseDTO(chatId,
-                TELEGRAM_USERNAME_ENTERED_SUCCESSFULLY_MESSAGE);
+                TELEGRAM_USERNAME_ENTERED_SUCCESSFULLY_MESSAGE +
+                "\n" + TELEGRAM_ENTER_PASSWORD_MESSAGE);
     }
 
     private Boolean checkIfUsernameNotExists(String username) {
@@ -84,16 +83,14 @@ public class TelegramLoginServiceImpl implements TelegramLoginService{
             authService.loginUser(loginUserDTO);
     }
 
-    @Override
-    @Transactional
-    public TelegramResponse loginUserAndGetTelegramResponse(Long chatId) {
+    private TelegramResponse loginUserAndGetTelegramResponse(Long chatId) {
         UserSessionDetails userSessionDetails = getUserSessionDetailsByChatId(chatId);
         LoginUserDTO loginUserDTO = mapUserSessionDetailsToLoginUserDTO(userSessionDetails);
 
         try {
             authenticateUser(loginUserDTO);
         } catch (BadCredentialsException e) {
-            log.info("username : {} failed to log in since password entered is incorrect.",
+            log.info("username : {} failed to login since password provided is incorrect.",
                     userSessionDetails.getUsername());
             return createTelegramResponse(chatId,TELEGRAM_INCORRECT_PASSWORD_ENTERED);
         }

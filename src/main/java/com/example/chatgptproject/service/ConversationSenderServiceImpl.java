@@ -1,11 +1,11 @@
 package com.example.chatgptproject.service;
 
-
 import com.example.chatgptproject.dto.ChatMessageDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-import static com.example.chatgptproject.utils.constants.TelegramResponseConstants.SHARE_CONVERSATION_BY_EMAIL_RESPONSE;
+import static com.example.chatgptproject.utils.constants.TelegramResponseConstants.CONVERSATION_SENT_BY_EMAIL_SUCCESSFULLY;
+import static com.example.chatgptproject.utils.constants.TelegramResponseConstants.TELEGRAM_ENTER_EMAIL_MESSAGE;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -19,14 +19,14 @@ public class ConversationSenderServiceImpl implements ConversationSenderService{
         Long chatId = chatMessageDTO.getChatId();
         if(isEmailConversationState(chatId)) {
             handleEmailConversationState(chatMessageDTO);
-            return SHARE_CONVERSATION_BY_EMAIL_RESPONSE;
+            return CONVERSATION_SENT_BY_EMAIL_SUCCESSFULLY;
         }
 
         startEmailConversationState(chatId);
-        return "Please provide an email to send your conversation.";
+        return TELEGRAM_ENTER_EMAIL_MESSAGE;
     }
 
-    private Boolean isEmailConversationState(Long chatId) {
+    private boolean isEmailConversationState(Long chatId) {
         return telegramUserStateServiceImpl.checkIfEmailConversationStateOn(chatId);
     }
 

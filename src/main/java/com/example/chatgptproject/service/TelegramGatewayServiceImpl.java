@@ -13,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import java.io.IOException;
-import static com.example.chatgptproject.utils.constants.TelegramResponseConstants.TELEGRAM_LOGIN_OR_REGISTER_REQUEST_MESSAGE;
-import static com.example.chatgptproject.utils.constants.TelegramResponseConstants.TELEGRAM_LOGOUT_SUCCESSFULLY_MESSAGE;
+
+import static com.example.chatgptproject.utils.constants.TelegramResponseConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +30,7 @@ public class TelegramGatewayServiceImpl implements TelegramGatewayService{
     private final TelegramRequestTypeResolver telegramRequestTypeResolver;
 
     @Override
-    public TelegramResponse telegramRequestsGateway(@NotNull Update update)
+    public TelegramResponse handleTelegramRequest(@NotNull Update update)
             throws IOException, InterruptedException {
         String message = update.getMessage().getText();
         Long chatId = update.getMessage().getChatId();
@@ -39,7 +39,7 @@ public class TelegramGatewayServiceImpl implements TelegramGatewayService{
                 telegramRequestTypeResolver.resolve(message, chatId);
 
         return switch (telegramRequestType) {
-            case EMPTY_OR_NULL_MESSAGE -> handleNotValidRequest(chatId);
+            case EMPTY_OR_NULL_MESSAGE -> handleInvalidRequest(chatId);
             case NO_SESSION, NOT_LOGGED_IN -> handleStartingChatState(chatId);
             case LOGIN_BUTTON_PRESSED -> startLoginState(chatId);
             case REGISTER_BUTTON_PRESSED -> startRegisterState(chatId);
@@ -52,9 +52,8 @@ public class TelegramGatewayServiceImpl implements TelegramGatewayService{
         };
     }
 
-
-    private TelegramResponse handleNotValidRequest(Long chatId) {
-        return getTelegramResponseDTO(chatId, "no message!");
+    private TelegramResponse handleInvalidRequest(Long chatId) {
+        return getTelegramResponseDTO(chatId, TELEGRAM_INVALID_MESSAGE);
     }
 
     private TelegramResponse startLoginState(Long chatId) {
@@ -72,14 +71,15 @@ public class TelegramGatewayServiceImpl implements TelegramGatewayService{
     private TelegramResponse handleSendConversationRequest(Update update) {
         Long chatId = getChatIdFromUpdate(update);
         ChatMessageDTO chatMessageDTO = createChatMessageDTO(update);
-        String emailResponse = conversationSenderServiceImpl.handleSendConversationRequest(chatMessageDTO);
-        return createTelegramLoginRegisterKeyboardResponse(chatId, emailResponse);
+        String emailResponse =
+                conversationSenderServiceImpl.handleSendConversationRequest(chatMessageDTO);
+        return createTelegramMainChatKeyboardResponse(chatId, emailResponse);
     }
 
     private TelegramResponse handleLogoutRequest(Long chatId) {
         telegramUserStateServiceImpl.handleLogoutRequest(chatId);
 
-        return createTelegramMessageResponse(chatId, TELEGRAM_LOGOUT_SUCCESSFULLY_MESSAGE);
+        return getTelegramResponseDTO(chatId, TELEGRAM_LOGOUT_SUCCESSFULLY_MESSAGE);
     }
 
     private TelegramResponse handleStartingChatState(Long chatId) {
@@ -99,20 +99,19 @@ public class TelegramGatewayServiceImpl implements TelegramGatewayService{
 
         String responseMessage = ExtractMessageFromResponse(openAIResponse);
 
-        return telegramKeyboardServiceImpl.createTelegramResponseWithChatMainKeyboard(
+        return createTelegramMainChatKeyboardResponse(
                 chatMessageDTO.getChatId(),responseMessage);
-    }
-
-    private TelegramResponse createTelegramMessageResponse(Long chatId,String text) {
-        return TelegramMessageResponseDTO.builder()
-                .text(text)
-                .chatId(chatId)
-                .build();
     }
 
     private TelegramResponse createTelegramLoginRegisterKeyboardResponse(Long chatId,
                                                                          String chatMessage) {
         return telegramKeyboardServiceImpl.createTelegramResponseWithLoginRegisterKeyboard(
+                chatId, chatMessage);
+    }
+
+    private TelegramResponse createTelegramMainChatKeyboardResponse(Long chatId,
+                                                                    String chatMessage) {
+        return telegramKeyboardServiceImpl.createTelegramResponseWithChatMainKeyboard(
                 chatId, chatMessage);
     }
 
@@ -138,7 +137,7 @@ public class TelegramGatewayServiceImpl implements TelegramGatewayService{
         return update.getMessage().getChatId();
     }
 
-    private TelegramMessageResponseDTO getTelegramResponseDTO(Long chatId, String message) {
+    private TelegramResponse getTelegramResponseDTO(Long chatId, String message) {
         return telegramResponseDTOMapper.mapToDTO(chatId,message);
     }
 }

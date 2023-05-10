@@ -61,7 +61,8 @@ public class EmailServiceImpl implements EmailService{
         }
     }
 
-    private void sendMailWithAttachment(EmailDetailsDTO details)
+    @Override
+    public void sendMailWithAttachment(EmailDetailsDTO details)
     {
         try {
             MimeMessage mimeMessage

@@ -7,6 +7,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.io.IOException;
 
 public interface TelegramGatewayService {
-    TelegramResponse telegramRequestsGateway(@NotNull Update update)
+    TelegramResponse handleTelegramRequest(@NotNull Update update)
             throws IOException, InterruptedException;
 }

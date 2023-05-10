@@ -32,7 +32,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             TelegramResponse telegramMessageResponseDTO;
             try {
                 telegramMessageResponseDTO =
-                        telegramGatewayServiceImpl.telegramRequestsGateway(update);
+                        telegramGatewayServiceImpl.handleTelegramRequest(update);
 
                 sendTelegramMessage(telegramMessageResponseDTO);
             } catch (Exception e) {

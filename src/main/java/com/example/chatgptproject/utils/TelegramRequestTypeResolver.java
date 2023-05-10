@@ -9,39 +9,47 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TelegramRequestTypeResolver {
     private final TelegramUserStateServiceImpl telegramUserStateServiceImpl;
+    private TelegramRequestType telegramRequestType;
 
     public TelegramRequestType resolve(String message, long chatId) {
-        if (messageIsEmptyOrNull(message)) {
-            return TelegramRequestType.EMPTY_OR_NULL_MESSAGE;
-        }
-        if (checkIfUserDoesntHasSession(chatId))
-            return TelegramRequestType.NO_SESSION;
+        if (messageIsEmptyOrNull(message))
+            createTelegramRequestType(TelegramRequestType.EMPTY_OR_NULL_MESSAGE);
 
-        if (isLoginButtonPressed(message))
-            return TelegramRequestType.LOGIN_BUTTON_PRESSED;
+        else if (checkIfUserDoesntHasSession(chatId))
+            createTelegramRequestType(TelegramRequestType.NO_SESSION);
 
-        if (isRegisterButtonPressed(message))
-            return TelegramRequestType.REGISTER_BUTTON_PRESSED;
+        else if (isLoginButtonPressed(message))
+            createTelegramRequestType(TelegramRequestType.LOGIN_BUTTON_PRESSED);
 
-        if (isLogoutButtonPressed(message))
-            return TelegramRequestType.LOGOUT_BUTTON_PRESSED;
+        else if (isRegisterButtonPressed(message))
+            createTelegramRequestType(TelegramRequestType.REGISTER_BUTTON_PRESSED);
 
-        if (isSendConversationButtonPressed(message))
-            return TelegramRequestType.SEND_CONVERSATION_BUTTON_PRESSED;
+        else if (isLogoutButtonPressed(message))
+            createTelegramRequestType(TelegramRequestType.LOGOUT_BUTTON_PRESSED);
 
-        if (isLoginRequest(chatId))
-            return TelegramRequestType.LOGIN_REQUEST;
+        else if (isSendConversationButtonPressed(message))
+            createTelegramRequestType(TelegramRequestType.SEND_CONVERSATION_BUTTON_PRESSED);
 
-        if (isRegisterRequest(chatId))
-            return TelegramRequestType.REGISTER_REQUEST;
+        else if (isLoginRequest(chatId))
+            createTelegramRequestType(TelegramRequestType.LOGIN_REQUEST);
 
-        if (isSendConversationRequest(chatId))
-           return TelegramRequestType.SEND_CONVERSATION_REQUEST;
+        else if (isRegisterRequest(chatId))
+            createTelegramRequestType(TelegramRequestType.REGISTER_REQUEST);
 
-        if (userIsNotLoggedIn(chatId))
-            return TelegramRequestType.NOT_LOGGED_IN;
+        else if (isSendConversationRequest(chatId))
+            createTelegramRequestType(TelegramRequestType.SEND_CONVERSATION_REQUEST);
 
-        return TelegramRequestType.GENERATE_ANSWER;
+        else if (userIsNotLoggedIn(chatId))
+            createTelegramRequestType(TelegramRequestType.NOT_LOGGED_IN);
+
+        else
+            createTelegramRequestType(TelegramRequestType.GENERATE_ANSWER);
+
+        return telegramRequestType;
+    }
+
+    private void createTelegramRequestType(TelegramRequestType requestedType) {
+        telegramRequestType = requestedType;
     }
 
     private boolean messageIsEmptyOrNull(String message) {

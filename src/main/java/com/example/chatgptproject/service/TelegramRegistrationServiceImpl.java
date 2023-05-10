@@ -11,7 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.example.chatgptproject.utils.constants.TelegramResponseConstants.TELEGRAM_SUCCESSFULLY_REGISTERED_MESSAGE;
+import static com.example.chatgptproject.utils.constants.TelegramResponseConstants.*;
 
 @RequiredArgsConstructor
 @Service
@@ -44,14 +44,15 @@ public class TelegramRegistrationServiceImpl implements TelegramRegistrationServ
     public TelegramResponse handleUsernameInput(Long chatId, String username) {
         if (checkIfUserExists(username))
             return telegramKeyboardServiceImpl.createTelegramResponseWithLoginRegisterKeyboard(
-                    chatId, "username is already exists!");
+                    chatId, TELEGRAM_USERNAME_EXISTS_MESSAGE);
 
         telegramUserStateServiceImpl.setUsernameToUserSession(username,chatId);
 
         log.info("username : {} entered successfully to registration.", username);
 
         return getTelegramResponseDTO(chatId,
-                "username has successfully entered. Please enter password to register.");
+                TELEGRAM_USERNAME_ENTERED_SUCCESSFULLY_MESSAGE +
+                        "\n" + TELEGRAM_ENTER_PASSWORD_MESSAGE);
     }
 
     @Override
@@ -68,7 +69,8 @@ public class TelegramRegistrationServiceImpl implements TelegramRegistrationServ
     }
 
     private void registerUser(Long chatId) {
-        UserSessionDetails userSessionDetails = telegramUserStateServiceImpl.getUserSessionDetails(chatId);
+        UserSessionDetails userSessionDetails =
+                telegramUserStateServiceImpl.getUserSessionDetails(chatId);
         authService.registerUser(registerDTOMapper.mapToDTO(
                 userSessionDetails.getUsername(),
                 userSessionDetails.getPassword()));
