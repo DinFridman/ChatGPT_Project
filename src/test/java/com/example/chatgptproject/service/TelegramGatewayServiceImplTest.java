@@ -5,6 +5,7 @@ import com.example.chatgptproject.dto.TelegramKeyBoardMessageDTO;
 import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.TelegramResponse;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
+import com.example.chatgptproject.service.telegramService.*;
 import com.example.chatgptproject.utils.TelegramRequestTypeResolver;
 import com.example.chatgptproject.utils.enums.Roles;
 import org.junit.jupiter.api.Assertions;

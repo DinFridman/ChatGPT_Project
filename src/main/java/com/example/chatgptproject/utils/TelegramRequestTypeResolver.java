@@ -1,6 +1,6 @@
 package com.example.chatgptproject.utils;
 
-import com.example.chatgptproject.service.TelegramUserStateServiceImpl;
+import com.example.chatgptproject.service.telegramService.TelegramUserStateServiceImpl;
 import com.example.chatgptproject.utils.enums.TelegramRequestType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -81,7 +81,7 @@ public class TelegramRequestTypeResolver {
     }
 
     private boolean isRegisterRequest(Long chatId) {
-        return telegramUserStateServiceImpl.checkIfRegisterRequest(chatId);
+        return telegramUserStateServiceImpl.isRegisterRequest(chatId);
     }
 
     private boolean isSendConversationRequest(Long chatId) {
@@ -89,6 +89,6 @@ public class TelegramRequestTypeResolver {
     }
 
     private boolean userIsNotLoggedIn(Long chatId) {
-        return !telegramUserStateServiceImpl.checkIfUserLoggedIn(chatId);
+        return !telegramUserStateServiceImpl.isUserLoggedIn(chatId);
     }
 }

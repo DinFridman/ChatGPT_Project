@@ -1,6 +1,6 @@
-package com.example.chatgptproject.service;
+package com.example.chatgptproject.service.telegramService;
 
-import com.example.chatgptproject.dto.UserSessionDetails;
+import com.example.chatgptproject.model.UserSessionDetails;
 
 public interface TelegramUsersSessionService {
     void createNewSessionForUser(Long chatId);
@@ -8,5 +8,5 @@ public interface TelegramUsersSessionService {
     void addUserSessionDetails(UserSessionDetails userSessionDetails);
     void updateUserSessionDetails(UserSessionDetails userSessionDetails);
     void removeUserSessionDetails(Long chatId);
-    boolean checkIfUserSessionExistByChatId(Long chatId);
+    boolean checkIfUserSessionExistsByChatId(Long chatId);
 }

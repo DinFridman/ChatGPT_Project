@@ -1,9 +1,11 @@
-package com.example.chatgptproject.service;
+package com.example.chatgptproject.service.telegramService;
 import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.ChatMessageDTO;
 import com.example.chatgptproject.dto.ConversationDTO;
 import com.example.chatgptproject.dto.openAI.OpenAIPromptDTO;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
+import com.example.chatgptproject.service.EmailServiceImpl;
+import com.example.chatgptproject.service.MessagesServiceImpl;
 import com.example.chatgptproject.service.openAIService.OpenAIRequestHandlerImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

@@ -1,4 +1,4 @@
-package com.example.chatgptproject.service;
+package com.example.chatgptproject.service.telegramService;
 
 import com.example.chatgptproject.dto.TelegramResponse;
 

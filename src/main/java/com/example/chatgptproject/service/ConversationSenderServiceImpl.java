@@ -1,6 +1,8 @@
 package com.example.chatgptproject.service;
 
 import com.example.chatgptproject.dto.ChatMessageDTO;
+import com.example.chatgptproject.service.telegramService.TelegramRequestServiceImpl;
+import com.example.chatgptproject.service.telegramService.TelegramUserStateServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;

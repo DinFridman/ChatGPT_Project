@@ -1,15 +1,15 @@
-package com.example.chatgptproject.service;
+package com.example.chatgptproject.service.telegramService;
 
 import com.example.chatgptproject.dto.TelegramResponse;
-import com.example.chatgptproject.dto.UserSessionDetails;
+import com.example.chatgptproject.model.UserSessionDetails;
 
 public interface TelegramUserStateService {
     TelegramResponse startRegisterState(Long chatId);
-    boolean checkIfRegisterRequest(Long chatId);
-    boolean checkIfUserLoggedIn(Long chatId);
+    boolean isRegisterRequest(Long chatId);
+    boolean isUserLoggedIn(Long chatId);
     UserSessionDetails getUserSessionDetails(Long chatId);
     TelegramResponse startLoginState(Long chatId);
-    boolean checkIfUsernameHasBeenSet(Long chatId);
+    boolean isUsernameProvided(Long chatId);
     void setUsernameToUserSession(String username, Long chatId);
     void setPasswordToUserSession(String password, Long chatId);
     void turnOffRegistrationState(Long chatId);

@@ -1,18 +1,20 @@
-package com.example.chatgptproject.dto;
+package com.example.chatgptproject.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 
 @RedisHash("UserSessionDetails")
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
+@Builder
 public class UserSessionDetails implements Serializable {
     @Id
     private Long chatId;
@@ -24,5 +26,5 @@ public class UserSessionDetails implements Serializable {
     private Boolean isLoginRequest = false;
     private Boolean isEmailConversationRequest = false;
     @TimeToLive
-    private Long expiration = 3600l;
+    private Long expiration = 3600L;
 }

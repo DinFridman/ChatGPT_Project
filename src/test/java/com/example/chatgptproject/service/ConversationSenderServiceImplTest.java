@@ -1,6 +1,8 @@
 package com.example.chatgptproject.service;
 
 import com.example.chatgptproject.dto.ChatMessageDTO;
+import com.example.chatgptproject.service.telegramService.TelegramRequestServiceImpl;
+import com.example.chatgptproject.service.telegramService.TelegramUserStateServiceImpl;
 import com.example.chatgptproject.utils.enums.Roles;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,8 +18,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class ConversationSenderServiceImplTest {
-    @Mock TelegramUserStateServiceImpl telegramUserStateServiceImpl;
-    @Mock TelegramRequestServiceImpl telegramRequestService;
+    @Mock
+    TelegramUserStateServiceImpl telegramUserStateServiceImpl;
+    @Mock
+    TelegramRequestServiceImpl telegramRequestService;
     @InjectMocks ConversationSenderServiceImpl underTest;
     private Long chatId;
     private String expectedResponse;

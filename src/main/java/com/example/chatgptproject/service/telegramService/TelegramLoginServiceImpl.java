@@ -1,11 +1,11 @@
-package com.example.chatgptproject.service;
+package com.example.chatgptproject.service.telegramService;
 
 import com.example.chatgptproject.dto.LoginUserDTO;
 import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.TelegramResponse;
 import com.example.chatgptproject.dto.mapper.LoginUserDTOMapper;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
-import com.example.chatgptproject.dto.UserSessionDetails;
+import com.example.chatgptproject.model.UserSessionDetails;
 import com.example.chatgptproject.security.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,19 +26,19 @@ public class TelegramLoginServiceImpl implements TelegramLoginService{
     @Override
     public TelegramResponse handleLoginState(Long chatId, String message) {
         if(isUsernameInputState(chatId))
-            return handleUsernameInput(chatId,message);
+            return handleUsernameInputAndGetTelegramResponse(chatId,message);
 
         handlePasswordInput(chatId,message);
         return loginUserAndGetTelegramResponse(chatId);
     }
 
-    private Boolean isUsernameInputState(Long chatId) {
-        return !telegramUserStateServiceImpl.checkIfUsernameHasBeenSet(chatId);
+    private boolean isUsernameInputState(Long chatId) {
+        return !telegramUserStateServiceImpl.isUsernameProvided(chatId);
     }
 
-    private TelegramResponse handleUsernameInput(Long chatId, String username) {
+    private TelegramResponse handleUsernameInputAndGetTelegramResponse(Long chatId, String username) {
         if (checkIfUsernameNotExists(username))
-            return createTelegramResponseWithLoginRegisterKeyboard(
+            return createTelegramResponseDTO(
                     chatId, TELEGRAM_USERNAME_DOESNT_EXISTS_MESSAGE);
 
         telegramUserStateServiceImpl.setUsernameToUserSession(username,chatId);
@@ -54,11 +54,6 @@ public class TelegramLoginServiceImpl implements TelegramLoginService{
 
     private TelegramResponse createTelegramResponseWithMainChatKeyboard(Long chatId, String text) {
         return telegramKeyboardServiceImpl.createTelegramResponseWithChatMainKeyboard(chatId,text);
-    }
-
-    private TelegramResponse createTelegramResponseWithLoginRegisterKeyboard(
-            Long chatId, String text) {
-        return telegramKeyboardServiceImpl.createTelegramResponseWithLoginRegisterKeyboard(chatId,text);
     }
 
     private TelegramMessageResponseDTO createTelegramResponseDTO(Long chatId, String message) {

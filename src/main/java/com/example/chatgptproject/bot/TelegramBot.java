@@ -1,7 +1,7 @@
 package com.example.chatgptproject.bot;
 
 import com.example.chatgptproject.dto.TelegramResponse;
-import com.example.chatgptproject.service.TelegramGatewayServiceImpl;
+import com.example.chatgptproject.service.telegramService.TelegramGatewayServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

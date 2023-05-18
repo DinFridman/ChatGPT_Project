@@ -2,7 +2,7 @@ package com.example.chatgptproject.controller;
 
 import com.example.chatgptproject.bot.TelegramBot;
 import com.example.chatgptproject.dto.mapper.ChatMessageDTOMapper;
-import com.example.chatgptproject.service.TelegramGatewayServiceImpl;
+import com.example.chatgptproject.service.telegramService.TelegramGatewayServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;

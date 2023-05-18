@@ -1,17 +1,11 @@
 package com.example.chatgptproject.controller;
 
-import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.mapper.ChatMessageDTOMapper;
-import com.example.chatgptproject.service.TelegramRequestServiceImpl;
+import com.example.chatgptproject.service.telegramService.TelegramRequestServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.telegram.telegrambots.meta.api.objects.Update;
-
-import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor

@@ -1,13 +1,12 @@
-package com.example.chatgptproject.service;
+package com.example.chatgptproject.service.telegramService;
 
 import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.TelegramResponse;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
-import com.example.chatgptproject.dto.UserSessionDetails;
+import com.example.chatgptproject.model.UserSessionDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-
 import static com.example.chatgptproject.utils.constants.TelegramResponseConstants.*;
 
 @Log4j2
@@ -19,7 +18,7 @@ public class TelegramUserStateServiceImpl implements TelegramUserStateService{
 
     @Override
     public TelegramResponse startRegisterState(Long chatId) {
-        if(checkIfUserLoggedIn(chatId))
+        if(isUserLoggedIn(chatId))
             return handleUnAuthorizedRequestWhenLoggedIn(chatId);
 
         turnOnRegisterMode(chatId);
@@ -28,12 +27,12 @@ public class TelegramUserStateServiceImpl implements TelegramUserStateService{
     }
 
     @Override
-    public boolean checkIfRegisterRequest(Long chatId) {
+    public boolean isRegisterRequest(Long chatId) {
         return getUserSessionDetails(chatId).getIsRegisterRequest();
     }
 
     @Override
-    public boolean checkIfUserLoggedIn(Long chatId) {
+    public boolean isUserLoggedIn(Long chatId) {
         return getUserSessionDetails(chatId).getIsLoggedIn();
     }
 
@@ -43,8 +42,7 @@ public class TelegramUserStateServiceImpl implements TelegramUserStateService{
     }
 
     private TelegramResponse handleUnAuthorizedRequestWhenLoggedIn(Long chatId) {
-        return getTelegramResponseDTO(chatId,"You are logged in. \n" +
-                "Please logout and try again.");
+        return getTelegramResponseDTO(chatId,TELEGRAM_USER_LOGGED_IN_ALREADY);
     }
 
     private TelegramMessageResponseDTO getTelegramResponseDTO(Long chatId, String message) {
@@ -66,7 +64,7 @@ public class TelegramUserStateServiceImpl implements TelegramUserStateService{
     @Override
     public TelegramResponse startLoginState(Long chatId) {
 
-        if(checkIfUserLoggedIn(chatId))
+        if(isUserLoggedIn(chatId))
             return handleUnAuthorizedRequestWhenLoggedIn(chatId);
 
         turnOnLoginMode(chatId);
@@ -82,7 +80,7 @@ public class TelegramUserStateServiceImpl implements TelegramUserStateService{
     }
 
     @Override
-    public boolean checkIfUsernameHasBeenSet(Long chatId) {
+    public boolean isUsernameProvided(Long chatId) {
         return getUserSessionDetails(chatId).getUsername() != null;
     }
 
@@ -148,7 +146,7 @@ public class TelegramUserStateServiceImpl implements TelegramUserStateService{
 
     @Override
     public boolean checkIfUserHasSession(Long chatId) {
-        return telegramUsersSessionServiceImpl.checkIfUserSessionExistByChatId(chatId);
+        return telegramUsersSessionServiceImpl.checkIfUserSessionExistsByChatId(chatId);
     }
 
     private void createNewSessionForUser(Long chatId) {

@@ -1,9 +1,10 @@
-package com.example.chatgptproject.service;
+package com.example.chatgptproject.service.telegramService;
 
 import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.TelegramResponse;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
-import com.example.chatgptproject.dto.UserSessionDetails;
+import com.example.chatgptproject.model.UserSessionDetails;
+import com.example.chatgptproject.security.dto.RegisterDTO;
 import com.example.chatgptproject.security.dto.RegisterDTOMapper;
 import com.example.chatgptproject.security.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class TelegramRegistrationServiceImpl implements TelegramRegistrationServ
     private final AuthService authService;
 
     @Override
+    @Transactional
     public TelegramResponse handleRegisterState(Long chatId, String message) {
         if(IsUsernameInputState(chatId))
             return handleUsernameInput(chatId,message);
@@ -35,32 +37,29 @@ public class TelegramRegistrationServiceImpl implements TelegramRegistrationServ
                 chatId,TELEGRAM_SUCCESSFULLY_REGISTERED_MESSAGE);
     }
 
-    private Boolean IsUsernameInputState(Long chatId) {
-        return !telegramUserStateServiceImpl.checkIfUsernameHasBeenSet(chatId);
+    private boolean IsUsernameInputState(Long chatId) {
+        return !telegramUserStateServiceImpl.isUsernameProvided(chatId);
     }
 
-    @Override
-    @Transactional
-    public TelegramResponse handleUsernameInput(Long chatId, String username) {
+
+    private TelegramResponse handleUsernameInput(Long chatId, String username) {
         if (checkIfUserExists(username))
-            return telegramKeyboardServiceImpl.createTelegramResponseWithLoginRegisterKeyboard(
-                    chatId, TELEGRAM_USERNAME_EXISTS_MESSAGE);
+            return createTelegramResponseDTO(chatId,TELEGRAM_USERNAME_EXISTS_MESSAGE);
 
         telegramUserStateServiceImpl.setUsernameToUserSession(username,chatId);
 
         log.info("username : {} entered successfully to registration.", username);
 
-        return getTelegramResponseDTO(chatId,
+        return createTelegramResponseDTO(chatId,
                 TELEGRAM_USERNAME_ENTERED_SUCCESSFULLY_MESSAGE +
                         "\n" + TELEGRAM_ENTER_PASSWORD_MESSAGE);
     }
 
-    @Override
-    public boolean checkIfUserExists(String username) {
+    private boolean checkIfUserExists(String username) {
         return authService.checkIfAppUserExists(username);
     }
 
-    private TelegramMessageResponseDTO getTelegramResponseDTO(Long chatId, String message) {
+    private TelegramMessageResponseDTO createTelegramResponseDTO(Long chatId, String message) {
         return telegramResponseDTOMapper.mapToDTO(chatId,message);
     }
 
@@ -69,14 +68,27 @@ public class TelegramRegistrationServiceImpl implements TelegramRegistrationServ
     }
 
     private void registerUser(Long chatId) {
-        UserSessionDetails userSessionDetails =
-                telegramUserStateServiceImpl.getUserSessionDetails(chatId);
-        authService.registerUser(registerDTOMapper.mapToDTO(
-                userSessionDetails.getUsername(),
-                userSessionDetails.getPassword()));
+        UserSessionDetails userSessionDetails = getUserSessionDetails(chatId);
+        RegisterDTO registerDTO = createRegisterDTOFromUserSessionDetails(userSessionDetails);
+        authService.registerUser(registerDTO);
 
         log.info("user : {} registered successfully.", userSessionDetails.getUsername());
 
+        turnOffRegistrationState(chatId);
+    }
+
+    private UserSessionDetails getUserSessionDetails(Long chatId) {
+        return telegramUserStateServiceImpl.getUserSessionDetails(chatId);
+    }
+
+    private RegisterDTO createRegisterDTOFromUserSessionDetails(
+            UserSessionDetails userSessionDetails) {
+        return registerDTOMapper.mapToDTO(
+                userSessionDetails.getUsername(),
+                userSessionDetails.getPassword());
+    }
+
+    private void turnOffRegistrationState(Long chatId) {
         telegramUserStateServiceImpl.turnOffRegistrationState(chatId);
     }
 

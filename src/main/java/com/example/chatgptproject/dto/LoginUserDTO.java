@@ -1,10 +1,10 @@
 package com.example.chatgptproject.dto;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
+@Builder
 public class LoginUserDTO {
     private String username;
     private String password;

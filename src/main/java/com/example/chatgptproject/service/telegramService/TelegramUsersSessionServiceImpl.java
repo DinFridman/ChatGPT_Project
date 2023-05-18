@@ -1,6 +1,6 @@
-package com.example.chatgptproject.service;
+package com.example.chatgptproject.service.telegramService;
 
-import com.example.chatgptproject.dto.UserSessionDetails;
+import com.example.chatgptproject.model.UserSessionDetails;
 import com.example.chatgptproject.repository.UserSessionDetailsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,8 +19,8 @@ public class TelegramUsersSessionServiceImpl implements TelegramUsersSessionServ
     public void createNewSessionForUser(Long chatId) {
         UserSessionDetails userSessionDetails = createNewUserSessionWithChatId(chatId);
         log.info("-----------------------" +
-                "New session created for user : {}" +
-                "-----------------------", userSessionDetails.getUsername());
+                "New session created for user with chatId : {}" +
+                "-----------------------", chatId);
 
         addUserSessionDetails(userSessionDetails);
     }
@@ -55,14 +55,14 @@ public class TelegramUsersSessionServiceImpl implements TelegramUsersSessionServ
                 " has been removed.", chatId);
     }
 
-    private UserSessionDetails createNewUserSessionWithChatId(Long chatId) {
-        UserSessionDetails userSessionDetails = new UserSessionDetails();
-        userSessionDetails.setChatId(chatId);
-        return userSessionDetails;
+    @Override
+    public boolean checkIfUserSessionExistsByChatId(Long chatId) {
+        return userSessionDetailsRepository.existsById(chatId);
     }
 
-    @Override
-    public boolean checkIfUserSessionExistByChatId(Long chatId) {
-        return userSessionDetailsRepository.existsById(chatId);
+    private UserSessionDetails createNewUserSessionWithChatId(Long chatId) {
+       return UserSessionDetails.builder()
+                .chatId(chatId)
+                .build();
     }
 }

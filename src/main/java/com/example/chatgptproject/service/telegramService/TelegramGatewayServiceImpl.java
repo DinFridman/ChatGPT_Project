@@ -1,10 +1,11 @@
-package com.example.chatgptproject.service;
+package com.example.chatgptproject.service.telegramService;
 
 import com.example.chatgptproject.dto.ChatMessageDTO;
 import com.example.chatgptproject.dto.TelegramMessageResponseDTO;
 import com.example.chatgptproject.dto.TelegramResponse;
 import com.example.chatgptproject.dto.mapper.ChatMessageDTOMapper;
 import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
+import com.example.chatgptproject.service.ConversationSenderServiceImpl;
 import com.example.chatgptproject.utils.TelegramRequestTypeResolver;
 import com.example.chatgptproject.utils.enums.TelegramRequestType;
 import lombok.RequiredArgsConstructor;

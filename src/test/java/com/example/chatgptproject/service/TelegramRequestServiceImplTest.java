@@ -6,6 +6,7 @@ import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
 import com.example.chatgptproject.dto.openAI.OpenAIPromptDTO;
 import com.example.chatgptproject.model.AppUserEntity;
 import com.example.chatgptproject.service.openAIService.OpenAIRequestHandlerImpl;
+import com.example.chatgptproject.service.telegramService.TelegramRequestServiceImpl;
 import com.example.chatgptproject.utils.enums.Roles;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
