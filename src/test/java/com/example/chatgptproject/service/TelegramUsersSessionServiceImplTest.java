@@ -34,7 +34,7 @@ class TelegramUsersSessionServiceImplTest {
 
     @Test
     void shouldCreateNewSessionForUser() {
-        underTest.createNewSessionForUser(chatId);
+        underTest.createNewSessionForUser(userSessionDetails);
 
         Mockito.verify(userSessionDetailsRepository).save(userSessionDetails);
     }

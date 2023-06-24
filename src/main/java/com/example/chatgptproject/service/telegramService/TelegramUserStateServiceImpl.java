@@ -6,6 +6,7 @@ import com.example.chatgptproject.dto.mapper.TelegramResponseDTOMapper;
 import com.example.chatgptproject.model.UserSessionDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import static com.example.chatgptproject.utils.constants.TelegramResponseConstants.*;
 
@@ -150,7 +151,8 @@ public class TelegramUserStateServiceImpl implements TelegramUserStateService{
     }
 
     private void createNewSessionForUser(Long chatId) {
-        telegramUsersSessionServiceImpl.createNewSessionForUser(chatId);
+        UserSessionDetails userSessionDetails = telegramUsersSessionServiceImpl.createUserSessionDetailsFromChatId(chatId);
+        telegramUsersSessionServiceImpl.createNewSessionForUser(userSessionDetails);
     }
 
     @Override

@@ -16,13 +16,16 @@ public class TelegramUsersSessionServiceImpl implements TelegramUsersSessionServ
 
 
     @Override
-    public void createNewSessionForUser(Long chatId) {
-        UserSessionDetails userSessionDetails = createNewUserSessionWithChatId(chatId);
+    public void createNewSessionForUser(UserSessionDetails userSessionDetails) {
+        addUserSessionDetails(userSessionDetails);
         log.info("-----------------------" +
                 "New session created for user with chatId : {}" +
-                "-----------------------", chatId);
+                "-----------------------", userSessionDetails.getChatId());
+    }
 
-        addUserSessionDetails(userSessionDetails);
+    @Override
+    public UserSessionDetails createUserSessionDetailsFromChatId(Long chatId) {
+        return createNewUserSessionWithChatId(chatId);
     }
 
     @Override
