@@ -7,6 +7,7 @@ import com.example.chatgptproject.utils.enums.OpenAiModels;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import static com.example.chatgptproject.utils.constants.Constants.*;
 public class OpenAIRequestGeneratorServiceImpl implements OpenAIRequestGeneratorService{
     private final ObjectMapper objectMapper;
     private final OpenAIRequestDTOMapper openAIRequestDTOMapper;
+    @Value("${OPEN_AI_KEY}") String openAiKey;
 
 
     @Override
@@ -47,7 +49,7 @@ public class OpenAIRequestGeneratorServiceImpl implements OpenAIRequestGenerator
     public HttpRequest createHttpRequest(String body) {
         return HttpRequest.newBuilder().uri(URI.create(CHAT_COMPLETION_URL))
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + OPEN_AI_KEY)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + openAiKey)
                 .POST(HttpRequest.BodyPublishers.ofString(body)).build();
     }
 

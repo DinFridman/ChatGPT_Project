@@ -24,7 +24,8 @@ public class TelegramResponseConstants {
     public static final String TELEGRAM_INVALID_MESSAGE = "no message!";
     public static final String TELEGRAM_ENTER_USERNAME_MESSAGE = "Please enter your username.";
     public static final String TELEGRAM_ENTER_PASSWORD_MESSAGE = "Please enter your password.";
-    public static final String TELEGRAM_USERNAME_EXISTS_MESSAGE = "username is already exists!";
+    public static final String TELEGRAM_USERNAME_EXISTS_MESSAGE = "username is already exists! \n"
+            + TELEGRAM_ENTER_USERNAME_MESSAGE;
     public static final String TELEGRAM_ENTER_EMAIL_MESSAGE =
             "Please provide an email to send your conversation.";
     public static final String TELEGRAM_USER_LOGGED_IN_ALREADY = "You are logged in. \n" +

@@ -1,7 +1,6 @@
 package com.example.chatgptproject.utils.constants;
 
 public class Constants {
-    public static final String OPEN_AI_KEY = "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";
     public static final String CHAT_COMPLETION_URL = "https://api.openai.com/v1/chat/completions";
     public static final String TELEGRAM_BOT_NAME = "chatGPT_project_bot";
     public static final String TELEGRAM_URL = "https://api.telegram.org/bot";
