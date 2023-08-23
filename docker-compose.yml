@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  app:
+    image: 'chat-gpt-project'
+    ports:
+      - "8080:8080"
+    build:
+      context: .
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - OPEN_AI_KEY=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
+
+  postgres:
+    image: 'postgres'
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=Din5675671
+    volumes:
+      - /var/lib/postgresql/data:/var/lib/postgresql/data
+
+
+  redis:
+    image: 'redis'
+    ports:
+      - "6379:6379"
+    volumes:
+      - /data:/var/lib/docker/volumes/fee8668d6dc80fd62f64e17e6ea9459ccf0c48da49dbe3e79d100668abd8fb08/_data
