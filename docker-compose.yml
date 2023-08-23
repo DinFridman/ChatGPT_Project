@@ -16,7 +16,7 @@ services:
       - postgres
       - redis
     environment:
-      - OPEN_AI_KEY=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
+      - OPEN_AI_KEY=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
       - POSTGRES_PASSWORD=Din5675671
     networks:
       - ChatGPT-project-network
