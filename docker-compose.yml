@@ -1,8 +1,13 @@
 version: '3.8'
 
+networks:
+  ChatGPT-project-network:
+    driver: bridge
+
 services:
   app:
     image: 'chat-gpt-project'
+    container_name: chat-gpt-project-container
     ports:
       - "8080:8080"
     build:
@@ -12,20 +17,26 @@ services:
       - redis
     environment:
       - OPEN_AI_KEY=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
+      - POSTGRES_PASSWORD=Din5675671
+    networks:
+      - ChatGPT-project-network
 
   postgres:
     image: 'postgres'
+    container_name: postgres-container
     ports:
       - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=Din5675671
-    volumes:
-      - /var/lib/postgresql/data:/var/lib/postgresql/data
+      - PGUSER=postgres
+    networks:
+      - ChatGPT-project-network
 
 
   redis:
     image: 'redis'
+    container_name: redis-container
     ports:
       - "6379:6379"
-    volumes:
-      - /data:/var/lib/docker/volumes/fee8668d6dc80fd62f64e17e6ea9459ccf0c48da49dbe3e79d100668abd8fb08/_data
+    networks:
+      - ChatGPT-project-network
