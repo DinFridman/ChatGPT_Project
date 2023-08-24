@@ -1,4 +1,4 @@
-package com.example.chatgptproject.adviser;
+package com.example.chatgptproject.advice;
 
 import com.example.chatgptproject.exception.mail.EmailSendFailureException;
 import com.example.chatgptproject.exception.register.RegisterAbstractException;

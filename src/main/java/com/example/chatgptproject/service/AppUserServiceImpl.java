@@ -25,9 +25,7 @@ public class AppUserServiceImpl implements AppUserService {
     public AppUserEntity getAppUserByUsername(String username) {
         AppUserEntity user =
                 appUserRepository.findAppUserEntityByUsername(username)
-                        .orElseThrow(() -> {
-                    throw new UsernameNotFoundException("User is not found!");
-                });
+                        .orElseThrow(() -> new UsernameNotFoundException("User is not found!"));
 
         return user;
     }
