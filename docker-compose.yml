@@ -12,6 +12,10 @@ services:
       - redis
     environment:
       - OPEN_AI_KEY=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
+      - POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres
+      - POSTGRES_PASSWORD=Din5675671
+      - REDIS_HOST=localhost
+
 
   postgres:
     image: 'postgres'
@@ -29,3 +33,5 @@ services:
       - "6379:6379"
     volumes:
       - /data:/var/lib/docker/volumes/fee8668d6dc80fd62f64e17e6ea9459ccf0c48da49dbe3e79d100668abd8fb08/_data
+
+

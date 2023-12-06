@@ -1,5 +1,3 @@
-FROM openjdk:17-alpine
-COPY target/ChatGPT-Project-0.0.1-SNAPSHOT.jar app.jar
-ARG OPEN_AI_KEY=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
-ARG POSTGRES_PASSWORD=Din5675671
+FROM openjdk:17
+COPY target/ChatGPT-Project-snapshot.jar app.jar
 ENTRYPOINT ["java","-jar","/app.jar"]
